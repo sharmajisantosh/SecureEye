@@ -114,9 +114,9 @@ public class LocationHistoryPolyline extends AppCompatActivity implements OnMapR
                     List<DocumentSnapshot> uList = task.getResult().getDocuments();
                     if (uList.size() > 0) {
                         for (int i = 0; i < uList.size(); i++) {
-                            userList.add(uList.get(i).toObject(UserProfile.class));
+                           /* userList.add(uList.get(i).toObject(UserProfile.class));
                             uList.get(i).getId();
-                            userAdapter.notifyDataSetChanged();
+                            userAdapter.notifyDataSetChanged();*/
                         }
                     } else {
                         Toast.makeText(LocationHistoryPolyline.this, "No user found.", Toast.LENGTH_SHORT).show();
