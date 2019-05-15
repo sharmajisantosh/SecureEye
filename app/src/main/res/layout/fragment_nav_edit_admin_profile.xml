@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".Fragment.NavEditAdminProfile">
+
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/profilePic"
+        android:layout_width="@dimen/_100sdp"
+        android:layout_height="@dimen/_100sdp"
+        android:scaleType="centerCrop"
+        android:layout_marginTop="@dimen/_50sdp"
+        android:layout_centerHorizontal="true"
+        card_view:civ_border_width="@dimen/_2sdp"
+        card_view:civ_border_color="@color/colorPrimaryDark"
+        card_view:civ_circle_background_color="@color/colorPrimary"
+        android:src="@drawable/nav_profile"
+        />
+
+
+    <EditText
+        android:id="@+id/profileName"
+        style="@style/editStyle"
+        android:layout_width="@dimen/_220sdp"
+        android:layout_height="@dimen/_30sdp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/_50sdp"
+        android:background="@drawable/edittext_rounded"
+        android:layout_below="@+id/profilePic"
+        android:paddingLeft="@dimen/_15sdp"
+        android:textSize="@dimen/_12sdp" />
+
+    <com.hbb20.CountryCodePicker
+        android:id="@+id/editCountryCode"
+        android:layout_width="@dimen/_100sdp"
+        android:layout_height="@dimen/_30sdp"
+        android:background="@drawable/edittext_rounded"
+        android:layout_marginTop="@dimen/_12sdp"
+        android:paddingLeft="@dimen/_5sdp"
+        app:ccp_textSize="@dimen/_12sdp"
+        app:ccp_defaultNameCode="IN"
+        app:ccp_contentColor="@color/colorPrimary"
+        app:ccp_autoDetectCountry="true"
+        android:layout_alignStart="@+id/profileName"
+        android:layout_below="@+id/profileName">
+
+    </com.hbb20.CountryCodePicker>
+
+    <EditText
+        android:id="@+id/editMobile"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/_30sdp"
+        style="@style/editStyle"
+        android:layout_below="@+id/profileName"
+        android:layout_marginTop="@dimen/_12sdp"
+        android:hint="@string/Mobile_No"
+        android:focusable="false"
+        android:clickable="true"
+        android:inputType="phone"
+        android:maxLength="11"
+        android:layout_toRightOf="@+id/editCountryCode"
+        android:paddingLeft="@dimen/_15sdp"
+        android:paddingRight="@dimen/_15sdp"
+        android:textSize="@dimen/_12sdp"
+        android:layout_alignEnd="@+id/profileName"
+        android:background="@drawable/edittext_rounded"/>
+
+    <EditText
+        android:id="@+id/editOldPass"
+        style="@style/editStyle"
+        android:layout_width="@dimen/_220sdp"
+        android:layout_height="@dimen/_30sdp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/_12sdp"
+        android:focusable="false"
+        android:clickable="true"
+        android:background="@drawable/edittext_rounded"
+        android:hint="@string/ConfirmPass"
+        android:layout_below="@+id/editMobile"
+        android:paddingLeft="@dimen/_15sdp"
+        android:textSize="@dimen/_12sdp" />
+
+    <Button
+        android:id="@+id/btnProfileUpdate"
+        android:layout_width="@dimen/_130sdp"
+        android:layout_height="@dimen/_40sdp"
+        android:text="@string/Update_Profile"
+        android:textSize="@dimen/_12sdp"
+        android:layout_below="@id/editOldPass"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/_25sdp"
+        style="@style/textViewStyle"
+        android:background="@drawable/button_rounded_filled"
+        android:layout_marginBottom="@dimen/_12sdp"/>
+
+
+
+
+
+</RelativeLayout>

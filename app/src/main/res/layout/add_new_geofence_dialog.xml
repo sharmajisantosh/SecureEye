@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/relatLayout0"
+    android:layout_width="@dimen/_250sdp"
+    android:layout_height="wrap_content"
+    android:layout_below="@id/btnRelative"
+    android:layout_centerHorizontal="true"
+    android:layout_gravity="center_horizontal"
+    android:padding="@dimen/_12sdp"
+    card_view:cardCornerRadius="@dimen/_10sdp"
+    card_view:cardElevation="@dimen/_5sdp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/etGeofenceName"
+            style="@style/editStyle"
+            android:layout_width="@dimen/_180sdp"
+            android:layout_height="@dimen/_30sdp"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/_12sdp"
+            android:background="@drawable/edittext_rounded"
+            android:hint="@string/Geofence_Name"
+            android:paddingLeft="@dimen/_15sdp"
+            android:textSize="@dimen/_12sdp" />
+
+        <Button
+            android:id="@+id/btnSaveGeofence"
+            style="@style/textViewStyle"
+            android:layout_width="@dimen/_100sdp"
+            android:layout_height="@dimen/_30sdp"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginBottom="@dimen/_10sdp"
+            android:background="@drawable/button_rounded_filled"
+            android:text="Save"
+            android:textSize="@dimen/_10sdp" />
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

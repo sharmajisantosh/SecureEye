@@ -1,0 +1,56 @@
+<resources>
+    <string name="app_name">SecureEye</string>
+    <string name="default_notification_channel_id">ABCD001</string>
+    <string name="userName">User Name</string>
+    <string name="userId">User Id</string>
+    <string name="Password">Password</string>
+    <string name="Mobile_No">Mobile No</string>
+    <string name="forgotpwd"><u>Forgot Password ?</u></string>
+    <string name="Get_otp">Get OTP</string>
+    <string name="SecretCode">Secret Code</string>
+    <string name="Otp">Enter OTP</string>
+    <string name="ConfirmPass">New Password</string>
+    <string name="ReConfirmPass">New Password</string>
+    <string name="OldPass">Old Password</string>
+    <string name="Update_Profile">Update</string>
+    <string name="Geofence_Name">Geofence Name</string>
+
+
+    <!-- Error Texts -->
+    <string name="nameError">Enter valid name</string>
+    <string name="idError">Enter valid id</string>
+    <string name="passwordError">Enter valid password</string>
+    <string name="mobileError">Enter valid mobile number</string>
+    <string name="scodeError">Enter valid secret code</string>
+    <string name="otpError">Enter valid otp code</string>
+    <string name="fenceNameError">Enter valid name</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_navigation_dashboard">Gaurd App</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">User Name</string>
+    <string name="nav_header_subtitle">User contact number</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="notifications_admin_channel_name">Global channel</string>
+    <string name="notifications_admin_channel_description">Notifications sent from the app admin</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="permission_rationale">Location permission is needed for core functionality</string>
+    <string name="permission_denied_explanation">Permission was denied, but is needed for core functionality.</string>
+    <string name="ok">OK</string>
+    <string name="settings">Settings</string>
+    <string name="request_location_updates">Request location updates</string>
+    <string name="remove_location_updates">Remove location updates</string>
+    <string name="location_updated">Location Update Started in Background.</string>
+    <string name="launch_activity">Launch activity</string>
+    <string name="location_unknown">Location unknown</string>
+    <string name="location_updates_label">Location Updates</string>
+
+    <string name="otp_message">Please wait. Otp will be detected automatically. If not, enter manually.</string>
+    <string name="title_activity_maps_tracking">Map</string>
+    <string name="title_activity_user_navigation_drawer">UserNavigationDrawer</string>
+
+
+</resources>

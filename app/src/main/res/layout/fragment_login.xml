@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".Fragment.Login_Fragment">
+
+
+    <EditText
+        android:id="@+id/loginUserName"
+        android:layout_width="@dimen/_220sdp"
+        android:layout_height="@dimen/_30sdp"
+        style="@style/editStyle"
+        android:layout_marginTop="@dimen/_12sdp"
+        android:hint="@string/userName"
+        android:paddingLeft="@dimen/_15sdp"
+        android:textSize="@dimen/_12sdp"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/edittext_rounded" />
+
+    <com.hbb20.CountryCodePicker
+        android:id="@+id/loginCountryCode"
+        android:layout_width="@dimen/_100sdp"
+        android:layout_height="@dimen/_30sdp"
+        android:background="@drawable/edittext_rounded"
+        android:layout_marginTop="@dimen/_12sdp"
+        android:paddingLeft="@dimen/_5sdp"
+        app:ccp_textSize="@dimen/_12sdp"
+        app:ccp_defaultNameCode="IN"
+        app:ccp_contentColor="@color/colorPrimary"
+        app:ccp_autoDetectCountry="true"
+        android:layout_alignStart="@+id/loginPassword"
+        android:layout_below="@+id/loginUserName">
+
+    </com.hbb20.CountryCodePicker>
+
+    <EditText
+        android:id="@+id/loginMobile"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/_30sdp"
+        style="@style/editStyle"
+        android:layout_below="@+id/loginUserName"
+        android:layout_marginTop="@dimen/_12sdp"
+        android:hint="@string/Mobile_No"
+        android:inputType="phone"
+        android:maxLength="11"
+        android:layout_toRightOf="@+id/loginCountryCode"
+        android:paddingLeft="@dimen/_15sdp"
+        android:paddingRight="@dimen/_15sdp"
+        android:textSize="@dimen/_12sdp"
+        android:layout_alignEnd="@+id/loginPassword"
+        android:background="@drawable/edittext_rounded" />
+
+
+    <EditText
+        android:id="@+id/loginPassword"
+        android:layout_width="@dimen/_220sdp"
+        android:layout_height="@dimen/_30sdp"
+        style="@style/editStyle"
+        android:layout_below="@+id/loginMobile"
+        android:layout_marginTop="@dimen/_12sdp"
+        android:hint="@string/Password"
+        android:paddingLeft="@dimen/_15sdp"
+        android:textSize="@dimen/_12sdp"
+        android:background="@drawable/edittext_rounded"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:id="@+id/forgotPwd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/forgotpwd"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:layout_alignEnd="@+id/loginPassword"
+        style="@style/textViewStyleDark"
+        android:textSize="@dimen/_8sdp"
+        android:layout_below="@+id/loginPassword"/>
+
+    <Button
+        android:id="@+id/btnFragLogin"
+        android:layout_width="@dimen/_130sdp"
+        android:layout_height="@dimen/_40sdp"
+        android:text="Login"
+        android:textSize="@dimen/_12sdp"
+        android:layout_below="@id/forgotPwd"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/_18sdp"
+        style="@style/textViewStyle"
+        android:background="@drawable/button_rounded_filled"
+        android:layout_marginBottom="@dimen/_12sdp"/>
+
+
+
+</RelativeLayout>

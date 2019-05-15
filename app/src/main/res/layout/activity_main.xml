@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/mainRelative"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Activity.MainActivity"
+    android:background="@color/bg_main">
+
+    <RelativeLayout
+        android:id="@+id/btnRelative"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="@dimen/_40sdp">
+        <Button
+            android:id="@+id/btnLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/_30sdp"
+            android:layout_marginRight="0dp"
+            android:text="Login"
+            style="@style/textViewStyle"
+            android:textSize="@dimen/_10sdp"
+            android:background="@drawable/left_round_shape"
+            />
+        <Button
+            android:id="@+id/btnSignUp"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/_30sdp"
+            android:layout_toRightOf="@+id/btnLogin"
+            android:layout_marginRight="@dimen/_12sdp"
+            android:paddingRight="@dimen/_12sdp"
+            android:paddingLeft="@dimen/_12sdp"
+            style="@style/textViewStyle"
+            android:textSize="@dimen/_10sdp"
+            android:text="Admin Sign Up"
+            android:background="@drawable/right_round_shape"/>
+    </RelativeLayout>
+
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/relatLayout0"
+            xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/btnRelative"
+            android:layout_marginTop="@dimen/_50sdp"
+            android:layout_centerHorizontal="true"
+            card_view:cardElevation="@dimen/_5sdp"
+            card_view:cardCornerRadius="@dimen/_10sdp">
+
+        <FrameLayout
+            android:id="@+id/frameContainer"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_margin="@dimen/_5sdp"
+            />
+        </androidx.cardview.widget.CardView>
+    </RelativeLayout>

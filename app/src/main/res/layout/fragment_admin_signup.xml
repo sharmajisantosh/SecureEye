@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".Fragment.AdminSignup_Fragment">
+
+    <EditText
+        android:id="@+id/signupUserName"
+        android:layout_width="@dimen/_220sdp"
+        android:layout_height="@dimen/_30sdp"
+        style="@style/editStyle"
+        android:layout_marginTop="@dimen/_12sdp"
+        android:hint="@string/userName"
+        android:paddingLeft="@dimen/_15sdp"
+        android:paddingRight="@dimen/_15sdp"
+        android:textSize="@dimen/_12sdp"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/edittext_rounded" />
+    <EditText
+        android:id="@+id/signupPassword"
+        android:layout_width="@dimen/_220sdp"
+        android:layout_height="@dimen/_30sdp"
+        style="@style/editStyle"
+        android:layout_below="@+id/signupUserName"
+        android:layout_marginTop="@dimen/_12sdp"
+        android:hint="@string/Password"
+        android:paddingLeft="@dimen/_15sdp"
+        android:paddingRight="@dimen/_15sdp"
+        android:textSize="@dimen/_12sdp"
+        android:background="@drawable/edittext_rounded"
+        android:layout_centerHorizontal="true" />
+
+    <com.hbb20.CountryCodePicker
+        android:id="@+id/countryCode"
+        android:layout_width="@dimen/_100sdp"
+        android:layout_height="@dimen/_30sdp"
+        android:background="@drawable/edittext_rounded"
+        android:layout_marginTop="@dimen/_12sdp"
+        android:paddingLeft="@dimen/_5sdp"
+        app:ccp_textSize="@dimen/_12sdp"
+        app:ccp_defaultNameCode="IN"
+        app:ccp_contentColor="@color/colorPrimary"
+        app:ccp_autoDetectCountry="true"
+        android:layout_alignStart="@+id/signupPassword"
+        android:layout_below="@+id/signupPassword">
+
+    </com.hbb20.CountryCodePicker>
+
+    <EditText
+        android:id="@+id/signupMobile"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/_30sdp"
+        style="@style/editStyle"
+        android:layout_below="@+id/signupPassword"
+        android:layout_marginTop="@dimen/_12sdp"
+        android:hint="@string/Mobile_No"
+        android:inputType="phone"
+        android:maxLength="11"
+        android:layout_toRightOf="@+id/countryCode"
+        android:paddingLeft="@dimen/_15sdp"
+        android:paddingRight="@dimen/_15sdp"
+        android:textSize="@dimen/_12sdp"
+        android:layout_alignEnd="@+id/signupPassword"
+        android:background="@drawable/edittext_rounded" />
+
+    <Spinner
+        android:id="@+id/signupGeozoneSpinner"
+        android:layout_width="@dimen/_220sdp"
+        android:layout_height="@dimen/_30sdp"
+        android:layout_below="@+id/signupMobile"
+        android:layout_marginTop="@dimen/_12sdp"
+        android:background="@drawable/spinner_rounded"
+        android:layout_centerHorizontal="true"/>
+
+    <Spinner
+        android:id="@+id/signupAdminSpinner"
+        android:layout_width="@dimen/_220sdp"
+        android:layout_height="@dimen/_30sdp"
+        android:layout_below="@+id/signupGeozoneSpinner"
+        android:layout_marginTop="@dimen/_12sdp"
+        android:background="@drawable/spinner_rounded"
+        android:layout_centerHorizontal="true"/>
+
+    <Button
+        android:id="@+id/btnFragRegister"
+        android:layout_width="@dimen/_130sdp"
+        android:layout_height="@dimen/_40sdp"
+        android:text="Register"
+        android:textSize="@dimen/_12sdp"
+        android:layout_below="@id/signupAdminSpinner"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/_15sdp"
+        style="@style/textViewStyle"
+        android:background="@drawable/button_rounded_filled"
+        android:layout_marginBottom="@dimen/_12sdp"/>
+
+
+</RelativeLayout>
