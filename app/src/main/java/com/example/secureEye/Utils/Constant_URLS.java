@@ -14,5 +14,6 @@ public class Constant_URLS {
     public static final CollectionReference GEOFENCE_LIST = FirebaseFirestore.getInstance().collection("Geofence_List");
     public static final CollectionReference NOTIFICATION_DATA = FirebaseFirestore.getInstance().collection("Notifications");
     public static final CollectionReference ADMIN_PROFILE_REF = FirebaseFirestore.getInstance().collection("AdminProfile");
+    public static final CollectionReference DEVICE_STATUS_BATTERY = FirebaseFirestore.getInstance().collection("DeviceStatus");
 
 }

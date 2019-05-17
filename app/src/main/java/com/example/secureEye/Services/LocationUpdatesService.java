@@ -69,6 +69,7 @@ public class LocationUpdatesService extends Service {
     private CollectionReference locationsRef = Constant_URLS.LOCATIONS_REF;
     private CollectionReference locationHistoryRef = Constant_URLS.LOCATIONS_HISTORY;
     private FirebaseAuth mAuth;
+    private Intent batteryService;
 
     @SuppressWarnings("deprecation")
     public LocationUpdatesService() {
@@ -86,6 +87,7 @@ public class LocationUpdatesService extends Service {
                 onNewLocation(locationResult.getLastLocation());
             }
         };
+        batteryService=new Intent(this, DeviceStatusService.class);
 
         createLocationRequest();
         getLastLocation();
@@ -176,7 +178,7 @@ public class LocationUpdatesService extends Service {
         if (!mChangingConfiguration && LocationHelper.requestingLocationUpdates(this)) {
             Log.d(TAG, "Starting foreground service");
             /*
-            // TODO(developer). If targeting O, use the following code.
+            // If targeting O, use the following code.
             if (Build.VERSION.SDK_INT == Build.VERSION_CODES.O) {
                 mNotificationManager.startServiceInForeground(new Intent(this,
                         LocationUpdatesService.class), NOTIFICATION_ID, getNotification());
@@ -214,6 +216,8 @@ public class LocationUpdatesService extends Service {
             LocationHelper.setRequestingLocationUpdates(this, false);
             Log.d(TAG, "Lost location permission. Could not request updates. " + unlikely);
         }
+
+        startService(batteryService);
     }
 
     /**
@@ -226,6 +230,7 @@ public class LocationUpdatesService extends Service {
             mFusedLocationClient.removeLocationUpdates(mLocationCallback);
             LocationHelper.setRequestingLocationUpdates(this, false);
             stopSelf();
+            stopService(batteryService);
         } catch (SecurityException unlikely) {
             LocationHelper.setRequestingLocationUpdates(this, true);
             Log.d(TAG, "Lost location permission. Could not remove updates. " + unlikely);

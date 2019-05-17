@@ -3,6 +3,8 @@ package com.example.secureEye.Activity;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -24,6 +26,7 @@ import com.example.secureEye.R;
 import com.example.secureEye.Services.AppController;
 import com.example.secureEye.Utils.Constant_URLS;
 import com.example.secureEye.Utils.SharedPrefManager;
+import com.example.secureEye.Utils.TypefaceSpan;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -63,6 +66,8 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -72,7 +77,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import static com.example.secureEye.Services.GeofenceTransitionIntentService.KEY_LATITUDE;
 import static com.example.secureEye.Services.GeofenceTransitionIntentService.KEY_LONGITUDE;
 
-public class MapsTracking extends FragmentActivity implements OnMapReadyCallback, View.OnClickListener {
+public class MapsTracking extends AppCompatActivity implements OnMapReadyCallback, View.OnClickListener {
 
     private static final String TAG = "MapsTracking";
     public static GoogleMap mMap;
@@ -110,6 +115,13 @@ public class MapsTracking extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        SpannableString str = new SpannableString("Track User");
+        str.setSpan(new TypefaceSpan(this,TypefaceSpan.fontName),0, str.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ActionBar actionBar=getSupportActionBar();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        actionBar.setTitle(str);
+
         offlineUsers = findViewById(R.id.recycleOfflineList);
         onlineListView = findViewById(R.id.onlineListView);
         btnShowOnMap = findViewById(R.id.btnShowOnMap1);

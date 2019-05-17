@@ -83,7 +83,7 @@ public class LocationHelper {
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss z");
         sdf.setTimeZone(TimeZone.getDefault());
         String newDate=sdf.format(date);
-        Log.d(TAG, "getGMTTime: "+newDate);
+        //Log.d(TAG, "getGMTTime: "+newDate);
         return newDate;
     }
 
@@ -92,7 +92,7 @@ public class LocationHelper {
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss z");
         sdf.setTimeZone(TimeZone.getDefault());
         String newDate=sdf.format(date);
-        Log.d(TAG, "getGMTTime: "+newDate);
+        //Log.d(TAG, "getGMTTime: "+newDate);
         return date;
     }
 }

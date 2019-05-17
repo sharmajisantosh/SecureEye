@@ -15,6 +15,7 @@ import com.example.secureEye.Fragment.NavFrag2;
 import com.example.secureEye.Model.User;
 import com.example.secureEye.R;
 import com.example.secureEye.Services.AppController;
+import com.example.secureEye.Services.DeviceStatusService;
 import com.example.secureEye.Services.LocationUpdatesService;
 import com.example.secureEye.Utils.Constant_URLS;
 import com.example.secureEye.Utils.SharedPrefManager;
@@ -238,15 +239,17 @@ public class AdminNavigationDashboard extends AppCompatActivity implements Navig
         /*LocationUpdatesService mService=AppController.getInstance().mService;
         if (mService!=null)
             mService.removeLocationUpdates();*/
+
+
     }
 
-    @Override
+   /* @Override
     protected void onDestroy() {
         LocationUpdatesService mService = AppController.getInstance().mService;
         if (mService != null)
             mService.removeLocationUpdates();
         super.onDestroy();
-    }
+    }*/
 
     @Override
     public void onBackPressed() {

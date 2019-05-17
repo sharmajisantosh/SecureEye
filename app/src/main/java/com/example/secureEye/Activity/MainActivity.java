@@ -108,8 +108,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         btnLogin.setOnClickListener(this);
         btnAdminSignup.setOnClickListener(this);
-
-
     }
 
     @Override
