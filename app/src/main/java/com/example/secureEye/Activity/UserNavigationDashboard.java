@@ -152,14 +152,14 @@ public class UserNavigationDashboard extends AppCompatActivity implements Naviga
                         Log.d(TAG, "inside the geofence");
                         if (!msg.equalsIgnoreCase("Entered the geofence.")) {
                             msg = "Entered the geofence.";
-                            //saveNotificationToServer(msg);
+                            saveNotificationToServer(msg);
                             Toast.makeText(context, "inside location", Toast.LENGTH_SHORT).show();
                         }
                     } else {
                         Log.d(TAG, "outside the geofence");
                         if (!msg.equalsIgnoreCase("Exited the geofence.")) {
                             msg = "Exited the geofence.";
-                            //saveNotificationToServer(msg);
+                            saveNotificationToServer(msg);
                             Toast.makeText(context, "outside location", Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -180,7 +180,8 @@ public class UserNavigationDashboard extends AppCompatActivity implements Naviga
 
         Log.d(TAG, "saveNotificationToServer: " + userAdminDeviceToken);
 
-        notificationRef.document(String.valueOf(System.currentTimeMillis())).set(notificationMessage).addOnSuccessListener(new OnSuccessListener<Void>() {
+        notificationRef.document("GPS_Notification").collection(LocationHelper.getDate())
+                .document(String.valueOf(System.currentTimeMillis())).set(notificationMessage).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 Toast.makeText(getApplicationContext(), "Notification sent", Toast.LENGTH_SHORT).show();

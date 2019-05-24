@@ -396,7 +396,7 @@ public class LocationUpdatesService extends Service {
         loc.setTimeStamp(LocationHelper.getGMTTimeAsDate());
         //loc.setTimeStamp(null);
 
-        locationHistoryRef.document(mAuth.getCurrentUser().getUid()).collection("" + LocationHelper.getDate())
+        locationHistoryRef.document(mAuth.getCurrentUser().getUid()).collection(LocationHelper.getDate())
                 .document("" + System.currentTimeMillis())
                 .set(loc).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override

@@ -151,7 +151,7 @@ public class SessionManager {
 		return currTimeString;
 	}
 
-	public static boolean isNetworkAvaliable(Activity ctx) {
+	public static boolean isNetworkAvaliable(Context ctx) {
 		ConnectivityManager connectivityManager = (ConnectivityManager) ctx
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
 		if ((connectivityManager

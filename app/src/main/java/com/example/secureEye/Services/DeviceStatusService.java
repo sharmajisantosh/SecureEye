@@ -15,20 +15,40 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import com.bumptech.glide.util.LogTime;
 import com.example.secureEye.Utils.Constant_URLS;
+import com.example.secureEye.Utils.SessionManager;
+import com.example.secureEye.Utils.SharedPrefManager;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class DeviceStatusService extends Service {
+
+    private static final String TAG = "DeviceStatusService";
     private BatteryReceiver batteryReceiver;
-    private CollectionReference locationsRef = Constant_URLS.LOCATIONS_REF;
-    private FirebaseAuth mAuth;
+    private CollectionReference notificationData = Constant_URLS.NOTIFICATION_DATA;
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private String msg = "";
+    private String userAdminMail;
+    private String userAdminDeviceToken;
+    private List<Object> networkList;
 
 
     @Override
     public void onCreate() {
         super.onCreate();
         Log.d("myLog", "Service: onCreate");
+
+        //% BATTERY LISTENER
+        networkList=new ArrayList<>();
+        batteryReceiver = new BatteryReceiver();
+        registerReceiver(batteryReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
 
 
     }
@@ -39,9 +59,6 @@ public class DeviceStatusService extends Service {
         /*if (Build.VERSION.SDK_INT <= 19) {
             onTaskRemoved(intent);
         }*/
-        //% BATTERY LISTENER
-        batteryReceiver = new BatteryReceiver();
-        registerReceiver(batteryReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
 
         return START_STICKY;
     }
@@ -58,6 +75,7 @@ public class DeviceStatusService extends Service {
         Log.d("myLog", "Service: onDestroy");
         unregisterReceiver(batteryReceiver);
     }
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -75,13 +93,87 @@ public class DeviceStatusService extends Service {
             if (rawlevel >= 0 && scale > 0) {
                 level = (rawlevel * 100) / scale;
             }
-            boolean hasMobileNetwork=isMobileAvailable(getApplicationContext());
-            Log.d("deviceStatus", "onReceive: "+ hasMobileNetwork);
+            boolean hasMobileNetwork = isMobileAvailable(getApplicationContext());
+            Log.d("deviceStatus", "onReceive: " + hasMobileNetwork);
             Log.d("myLog", "Battery Level Remaining: " + level + "%");
-            Toast.makeText(context, "Battery: " + level + "% has network= "+hasMobileNetwork, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(context, "Battery: " + level + "% has network= "+hasMobileNetwork, Toast.LENGTH_SHORT).show();
 
+            if (level < 10) {
+                if (!msg.equalsIgnoreCase("Battery below 10%")) {
+                    msg = "Battery below 10%";
+                    saveNotification(msg);
+                }
+            }
+
+            if (!hasMobileNetwork && !msg.equalsIgnoreCase("No Network")) {
+                msg = "No Network";
+                Log.d(TAG, "hasmobilenetwork "+hasMobileNetwork);
+
+                if (SessionManager.isNetworkAvaliable(getApplicationContext())) {
+                    Log.d(TAG, "internet available ");
+                    saveNotification(msg);
+
+                }else {
+                    Log.d(TAG, "internet not available ");
+                    saveNotificationInList(msg);
+                }
+            }else {
+                if (SessionManager.isNetworkAvaliable(getApplicationContext())) {
+                    Log.d(TAG, "internet available in else");
+                    if (networkList.size() > 0) {
+                        for (int i = 0; i < networkList.size(); i++) {
+                            sendNotoficationToServer(networkList.get(i));
+                            Log.d(TAG, "networklist " + networkList.size());
+                        }
+                        networkList.clear();
+                        msg="abcd";
+                    }
+                }
+            }
         }
     }
+
+    private void saveNotificationInList(String msg) {
+        userAdminMail = SharedPrefManager.getInstance(getApplicationContext()).getUserAdminMail();
+        userAdminDeviceToken = SharedPrefManager.getInstance(getApplicationContext()).getUserAdminDeviceTokenId();
+        Map<String, Object> notificationMessage = new HashMap<>();
+        notificationMessage.put("message", msg);
+        notificationMessage.put("from_id", mAuth.getCurrentUser().getUid());
+        notificationMessage.put("from_name", mAuth.getCurrentUser().getDisplayName());
+        notificationMessage.put("to_admin", userAdminDeviceToken);
+        notificationMessage.put("admin_mail", userAdminMail);
+        notificationMessage.put("timeStamp", LocationHelper.getGMTTime());
+        networkList.add(notificationMessage);
+        Log.d(TAG, "saveNotificationInList: noti saved network");
+    }
+
+    private void saveNotification(String msg) {
+
+        userAdminMail = SharedPrefManager.getInstance(getApplicationContext()).getUserAdminMail();
+        userAdminDeviceToken = SharedPrefManager.getInstance(getApplicationContext()).getUserAdminDeviceTokenId();
+        Map<String, Object> notificationMessage = new HashMap<>();
+        notificationMessage.put("message", msg);
+        notificationMessage.put("from_id", mAuth.getCurrentUser().getUid());
+        notificationMessage.put("from_name", mAuth.getCurrentUser().getDisplayName());
+        notificationMessage.put("to_admin", userAdminDeviceToken);
+        notificationMessage.put("admin_mail", userAdminMail);
+        notificationMessage.put("timeStamp", LocationHelper.getGMTTime());
+
+        sendNotoficationToServer(notificationMessage);
+    }
+
+    private void sendNotoficationToServer(Object notificationMessage) {
+        Log.d(TAG, "saveDeviceNotificationToServer: " + userAdminDeviceToken);
+
+        notificationData.document("Device_Status_Notification").collection(LocationHelper.getDate())
+                .document(String.valueOf(System.currentTimeMillis())).set(notificationMessage).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Toast.makeText(getApplicationContext(), "device Notification sent", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
 
     public static Boolean isMobileAvailable(Context appcontext) {
         TelephonyManager tel = (TelephonyManager) appcontext.getSystemService(Context.TELEPHONY_SERVICE);
