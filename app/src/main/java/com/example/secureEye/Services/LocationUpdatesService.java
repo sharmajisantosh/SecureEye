@@ -361,49 +361,50 @@ public class LocationUpdatesService extends Service {
      * */
 
     private void SavetoServer() {
-
+        mAuth = FirebaseAuth.getInstance();
         String deviceId=SharedPrefManager.getInstance(getApplicationContext()).getDeviceToken();
+        String userUid=SharedPrefManager.getInstance(getApplicationContext()).getUserUid();
 
-        locationsRef.document(mAuth.getCurrentUser().getUid()).update("lat", String.valueOf(mLocation.getLatitude()),
-                "lon", String.valueOf(mLocation.getLongitude()),
-                "timeStamp", LocationHelper.getGMTTimeAsDate()).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                HashMap<String, Object> newLocationEntry=new HashMap<>();
-                newLocationEntry.put("uid",mAuth.getCurrentUser().getUid());
-                newLocationEntry.put("lat",String.valueOf(mLocation.getLatitude()));
-                newLocationEntry.put("lon",String.valueOf(mLocation.getLongitude()));
-                newLocationEntry.put("dispName",mAuth.getCurrentUser().getDisplayName());
-                newLocationEntry.put("deviceId", deviceId);
-                newLocationEntry.put("timeStamp",LocationHelper.getGMTTimeAsDate());
-                locationsRef.document(mAuth.getUid()).set(newLocationEntry).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
+            locationsRef.document(userUid).update("lat", String.valueOf(mLocation.getLatitude()),
+                    "lon", String.valueOf(mLocation.getLongitude()),
+                    "timeStamp", LocationHelper.getGMTTimeAsDate()).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    HashMap<String, Object> newLocationEntry = new HashMap<>();
+                    newLocationEntry.put("uid", userUid);
+                    newLocationEntry.put("lat", String.valueOf(mLocation.getLatitude()));
+                    newLocationEntry.put("lon", String.valueOf(mLocation.getLongitude()));
+                    newLocationEntry.put("dispName", mAuth.getCurrentUser().getDisplayName());
+                    newLocationEntry.put("deviceId", deviceId);
+                    newLocationEntry.put("timeStamp", LocationHelper.getGMTTimeAsDate());
+                    locationsRef.document(mAuth.getUid()).set(newLocationEntry).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
 
-                    }
-                });
-            }
-        });
+                        }
+                    });
+                }
+            });
 
-        LocationHistoryModel loc = new LocationHistoryModel();
-        loc.setLat(String.valueOf(mLocation.getLatitude()));
-        loc.setLon(String.valueOf(mLocation.getLongitude()));
-        loc.setDeviceId(deviceId);
-        loc.setTimeStamp(LocationHelper.getGMTTimeAsDate());
-        //loc.setTimeStamp(null);
 
-        locationHistoryRef.document(mAuth.getCurrentUser().getUid()).collection(LocationHelper.getDate())
-                .document("" + System.currentTimeMillis())
-                .set(loc).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                //Toast.makeText(LocationUpdatesService.this, "History saved", Toast.LENGTH_SHORT).show();
-            }
-        });
+            LocationHistoryModel loc = new LocationHistoryModel();
+            loc.setLat(String.valueOf(mLocation.getLatitude()));
+            loc.setLon(String.valueOf(mLocation.getLongitude()));
+            loc.setDeviceId(deviceId);
+            loc.setTimeStamp(LocationHelper.getGMTTimeAsDate());
+            //loc.setTimeStamp(null);
 
+            locationHistoryRef.document(userUid).collection(LocationHelper.getDate())
+                    .document("" + System.currentTimeMillis())
+                    .set(loc).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    //Toast.makeText(LocationUpdatesService.this, "History saved", Toast.LENGTH_SHORT).show();
+                }
+            });
     }
 }

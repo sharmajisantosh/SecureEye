@@ -6,16 +6,27 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".Fragment.AdminSignup_Fragment">
 
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/adminProfilePic"
+        android:layout_width="@dimen/_80sdp"
+        android:layout_height="@dimen/_80sdp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/_40sdp"
+        app:civ_border_width="@dimen/_2sdp"
+        app:civ_border_color="@color/bg_main"
+        android:src="@mipmap/ic_launcher_round"/>
+
     <EditText
         android:id="@+id/signupUserName"
         android:layout_width="@dimen/_220sdp"
         android:layout_height="@dimen/_30sdp"
         style="@style/editStyle"
-        android:layout_marginTop="@dimen/_12sdp"
+        android:layout_marginTop="@dimen/_20sdp"
         android:hint="@string/userName"
         android:paddingLeft="@dimen/_15sdp"
         android:paddingRight="@dimen/_15sdp"
         android:textSize="@dimen/_12sdp"
+        android:layout_below="@+id/adminProfilePic"
         android:layout_centerHorizontal="true"
         android:background="@drawable/edittext_rounded" />
     <EditText
@@ -71,15 +82,8 @@
         android:layout_height="@dimen/_30sdp"
         android:layout_below="@+id/signupMobile"
         android:layout_marginTop="@dimen/_12sdp"
-        android:background="@drawable/spinner_rounded"
-        android:layout_centerHorizontal="true"/>
-
-    <Spinner
-        android:id="@+id/signupAdminSpinner"
-        android:layout_width="@dimen/_220sdp"
-        android:layout_height="@dimen/_30sdp"
-        android:layout_below="@+id/signupGeozoneSpinner"
-        android:layout_marginTop="@dimen/_12sdp"
+        android:paddingBottom="@dimen/_3sdp"
+        android:paddingTop="@dimen/_3sdp"
         android:background="@drawable/spinner_rounded"
         android:layout_centerHorizontal="true"/>
 
@@ -89,7 +93,7 @@
         android:layout_height="@dimen/_40sdp"
         android:text="Register"
         android:textSize="@dimen/_12sdp"
-        android:layout_below="@id/signupAdminSpinner"
+        android:layout_below="@id/signupGeozoneSpinner"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/_15sdp"
         style="@style/textViewStyle"

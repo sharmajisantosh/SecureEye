@@ -37,19 +37,21 @@ public class SaveDefaultValueForAll {
     private static String userRole;
     private static String userAdminMail;
     private static String userSelfDeviceTokenId;
-    private static String userAdminDeviceTokenId;
+    private static String userProfilePicUrl;
+    private static String userAdminId;
+    private static String userUid;
     private static CollectionReference onlineRef, offlineRef, userProfileRef, adminProfileRef;
 
 
 
 
-    public static void saveDefaults(Context context, String loginType, StartMyActivity startMyActivity) {
+    public static void saveDefaults(Context context, String loginType, String email, String password, StartMyActivity startMyActivity) {
         mAuth = FirebaseAuth.getInstance();
         onlineRef = Constant_URLS.ONLINE_REF;
         offlineRef = Constant_URLS.OFFLINE_REF;
         userProfileRef = Constant_URLS.USER_PROFILE_REF;
         adminProfileRef=Constant_URLS.ADMIN_PROFILE_REF;
-        getDeviceToken(context);
+        getSelfDeviceToken(context);
 
         if (loginType.equalsIgnoreCase("Admin")){
 
@@ -65,30 +67,37 @@ public class SaveDefaultValueForAll {
                         userRole = userProfile.getRole();
                         userAdminMail = userProfile.getUserAdminMail();
                         userSelfDeviceTokenId = userProfile.getDeviceToken();
+                        userProfilePicUrl=userProfile.getProfilePic();
+                        userUid=userProfile.getUid();
 
                         SharedPrefManager.getInstance(context).saveUserGeoZone(userGeoZone);
                         SharedPrefManager.getInstance(context).saveUserRole(userRole);
                         SharedPrefManager.getInstance(context).saveUserAdminMail(userAdminMail);
+                        SharedPrefManager.getInstance(context).saveUserProfilePic(userProfilePicUrl);
+                        SharedPrefManager.getInstance(context).saveUserEmail(email);
+                        SharedPrefManager.getInstance(context).saveUserPassword(password);
+                        SharedPrefManager.getInstance(context).saveUserUid(userUid);
 
                         offlineRef.document(mAuth.getCurrentUser().getUid()).delete();
                         onlineRef.document(mAuth.getCurrentUser().getUid())
                                 .set(new User(mAuth.getCurrentUser().getDisplayName(), mAuth.getCurrentUser().getUid(), userGeoZone, "Online")).addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
-                                startMyActivity.startThisActivity("Admin");
+                                if (deviceToken.equals(userSelfDeviceTokenId)) {
+                                    startMyActivity.startThisActivity("Admin");
+                                } else {
+                                    adminProfileRef.document(mAuth.getCurrentUser().getUid()).update("deviceToken", deviceToken).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            startMyActivity.startThisActivity("Admin");
+                                        }
+                                    });
+                                }
                             }
                         });
-
-                        if (deviceToken.equals(userSelfDeviceTokenId)) {
-
-                        } else {
-                            adminProfileRef.document(mAuth.getCurrentUser().getUid()).update("deviceToken", deviceToken).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-
-                                }
-                            });
-                        }
+                    }else {
+                        startMyActivity.startThisActivity("NoUser");
+                        Log.d(TAG, "admin no user");
                     }
                 }
             });
@@ -104,10 +113,14 @@ public class SaveDefaultValueForAll {
                         userRole = userProfile.getRole();
                         userAdminMail = userProfile.getUserAdminMail();
                         userSelfDeviceTokenId = userProfile.getDeviceToken();
+                        userProfilePicUrl=userProfile.getProfilePic();
 
                         SharedPrefManager.getInstance(context).saveUserGeoZone(userGeoZone);
                         SharedPrefManager.getInstance(context).saveUserRole(userRole);
                         SharedPrefManager.getInstance(context).saveUserAdminMail(userAdminMail);
+                        SharedPrefManager.getInstance(context).saveUserProfilePic(userProfilePicUrl);
+                        SharedPrefManager.getInstance(context).saveUserEmail(email);
+                        SharedPrefManager.getInstance(context).saveUserPassword(password);
 
                         offlineRef.document(mAuth.getCurrentUser().getUid()).delete();
                         onlineRef.document(mAuth.getCurrentUser().getUid())
@@ -115,7 +128,18 @@ public class SaveDefaultValueForAll {
                             @Override
                             public void onSuccess(Void aVoid) {
                                 Log.d(TAG, "onSuccess: others");
-                                startMyActivity.startThisActivity("Others");
+                                adminProfileRef.whereEqualTo("email",userAdminMail).addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                                        if (!queryDocumentSnapshots.isEmpty()){
+                                            for (DocumentSnapshot snapshot : queryDocumentSnapshots) {
+                                                userAdminId=snapshot.getId();
+                                                SharedPrefManager.getInstance(context).saveUserAdminId(userAdminId);
+                                                startMyActivity.startThisActivity("Others");
+                                            }
+                                        }
+                                    }
+                                });
                             }
                         });
                         if (deviceToken!=null) {
@@ -130,35 +154,25 @@ public class SaveDefaultValueForAll {
                                 });
                             }
                         }else {
-                            getDeviceToken(context);
+                            getSelfDeviceToken(context);
                         }
+                    }else {
+                        startMyActivity.startThisActivity("NoUser");
+                        Log.d(TAG, "other no user");
                     }
                 }
             });
-            adminProfileRef.whereEqualTo("email",userAdminMail).addSnapshotListener(new EventListener<QuerySnapshot>() {
-                @Override
-                public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                    if (!queryDocumentSnapshots.isEmpty()){
-                        for (DocumentSnapshot snapshot : queryDocumentSnapshots) {
-                            UserProfile user = snapshot.toObject(UserProfile.class);
-                            Log.d(TAG, "" + user.getName());
-                            userAdminDeviceTokenId = user.getDeviceToken();
-                            SharedPrefManager.getInstance(context).saveUserAdminDeviceTokenId(userAdminDeviceTokenId);
 
-                        }
-                    }
-                }
-            });
         }
     }
 
-    public static String getDeviceToken(Context context) {
+    public static String getSelfDeviceToken(Context context) {
 
         FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
             @Override
             public void onSuccess(InstanceIdResult instanceIdResult) {
                 deviceToken = instanceIdResult.getToken();
-                SharedPrefManager.getInstance(context).saveDeviceToken(deviceToken);
+                SharedPrefManager.getInstance(context).saveSelfDeviceToken(deviceToken);
             }
         });
         return deviceToken;

@@ -55,6 +55,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         FirebaseUser user = mAuth.getCurrentUser();
         String loginType = SharedPrefManager.getInstance(MainActivity.this).getUserRole();
+        String email = SharedPrefManager.getInstance(MainActivity.this).getUserEmail();
+        String pass = SharedPrefManager.getInstance(MainActivity.this).getUserPassword();
         if (user != null&&loginType!=null) {
 
             final ProgressDialog progressDialog1 = new ProgressDialog(MainActivity.this);
@@ -62,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             progressDialog1.setMessage("Please wait...");
             progressDialog1.show();
 
-            SaveDefaultValueForAll.saveDefaults(MainActivity.this, loginType, new StartMyActivity() {
+            SaveDefaultValueForAll.saveDefaults(MainActivity.this, loginType,email,pass, new StartMyActivity() {
                 @Override
                 public void startThisActivity(String userType) {
                     if (userType.equalsIgnoreCase("Admin")){
@@ -71,34 +73,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
                         progressDialog1.dismiss();
-                    }else {
+                    }else if (userType.equalsIgnoreCase("Others")){
                         AppController.getInstance().isAppInBackground(false);
                         Intent intent = new Intent(MainActivity.this, UserNavigationDashboard.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
                         progressDialog1.dismiss();
+                    }else {
+                        Log.d(TAG, "startThisActivity: user"+ user.getDisplayName());
+                        Log.d(TAG, "startThisActivity: logintype "+loginType);
+                        progressDialog1.dismiss();
+                        fragmentManager.beginTransaction().replace(R.id.frameContainer, new Login_Fragment()).commit();
                     }
-
                 }
             });
-            /*if (loginType.equalsIgnoreCase("Admin")) {
-
-                SaveDefaultValueForAll.saveDefaults(MainActivity.this, loginType);
-
-                AppController.getInstance().isAppInBackground(false);
-                Intent intent = new Intent(MainActivity.this, AdminNavigationDashboard.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-                progressDialog1.dismiss();
-
-            } else {
-                SaveDefaultValueForAll.saveDefaults(MainActivity.this, loginType);
-                AppController.getInstance().isAppInBackground(false);
-                Intent intent = new Intent(MainActivity.this, UserNavigationDashboard.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-                progressDialog1.dismiss();
-            }*/
         }
 
         btnLogin.setBackgroundTintList(getResources().getColorStateList(R.color.red));
@@ -158,12 +146,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mService.removeLocationUpdates();*/
         super.onStop();
     }
-/*
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
         LocationUpdatesService mService = AppController.getInstance().mService;
         if (mService != null)
             mService.removeLocationUpdates();
-    }*/
+    }
 }

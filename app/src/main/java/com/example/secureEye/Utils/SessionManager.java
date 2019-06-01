@@ -145,7 +145,7 @@ public class SessionManager {
 
 		Date date1=new Date();
 
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
 		String currTimeString=simpleDateFormat.format(date1);
 
 		return currTimeString;
@@ -166,4 +166,5 @@ public class SessionManager {
 			return false;
 		}
 	}
+
 }

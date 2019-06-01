@@ -23,14 +23,17 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.basgeekball.awesomevalidation.AwesomeValidation;
 import com.basgeekball.awesomevalidation.ValidationStyle;
 import com.example.secureEye.Activity.AdminNavigationDashboard;
+import com.example.secureEye.Interface.StartMyActivity;
 import com.example.secureEye.R;
 import com.example.secureEye.Utils.Constant_URLS;
+import com.example.secureEye.Utils.SaveDefaultValueForAll;
 import com.example.secureEye.Utils.SessionManager;
 import com.example.secureEye.Model.UserProfile;
 import com.example.secureEye.Utils.SharedPrefManager;
@@ -48,35 +51,43 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.hbb20.CountryCodePicker;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
+import static android.app.Activity.RESULT_OK;
 import static com.example.secureEye.Utils.ImageConversion.decodeUri;
 
 public class AdminSignup_Fragment extends Fragment {
 
     private String TAG = "AdminSignup_Fragment";
-
     private EditText etUserName, etPassword, etMobile;
-    private Spinner geofenceSpinner, adminSpinner;
+    private Spinner geofenceSpinner;
     private Button btnRegister;
     private ProgressDialog progressDialog1;
     private CountryCodePicker countryCode;
     private AwesomeValidation validation;
+    private CircleImageView adminProfilePic;
     private String phoneNumber;
     private String simpleNumber;
-    private String cCode;
-    private Uri choosenImage;
-    private Bitmap bp;
     private FirebaseAuth mAuth;
     private String deviceToken = "";
     private CollectionReference geofenceRef, adminProfileRef;
+    private StorageReference profilePicRef;
     private List<String> geofenceList;
-    private List<UserProfile> adminList;
     private ArrayAdapter<String> geofenceAdapter;
     private String adminGeozone;
+    private Uri choosenImage;
+    private String email;
+    private String pass ;
+    private String profilePicUrl = "";
 
 
     public AdminSignup_Fragment() {
@@ -92,6 +103,7 @@ public class AdminSignup_Fragment extends Fragment {
 
         adminProfileRef = Constant_URLS.ADMIN_PROFILE_REF;
         geofenceRef = Constant_URLS.GEOFENCE_LIST;
+        profilePicRef = Constant_URLS.PROFILE_PIC_STORAGE_REF;
 
         etUserName = view.findViewById(R.id.signupUserName);
         etPassword = view.findViewById(R.id.signupPassword);
@@ -99,26 +111,41 @@ public class AdminSignup_Fragment extends Fragment {
         countryCode = view.findViewById(R.id.countryCode);
         btnRegister = view.findViewById(R.id.btnFragRegister);
         geofenceSpinner = view.findViewById(R.id.signupGeozoneSpinner);
-        adminSpinner = view.findViewById(R.id.signupGeozoneSpinner);
+        adminProfilePic = view.findViewById(R.id.adminProfilePic);
 
         geofenceList = new ArrayList<>();
-        adminList = new ArrayList<>();
 
         Typeface typeface = ResourcesCompat.getFont(getActivity(), R.font.roboto_medium);
         countryCode.setTypeFace(typeface);
         countryCode.registerCarrierNumberEditText(etMobile);
         etUserName.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
 
-        choosenImage = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
-                "://" + getResources().getResourcePackageName(R.drawable.default_user)
-                + '/' + getResources().getResourceTypeName(R.drawable.default_user)
-                + '/' + getResources().getResourceEntryName(R.drawable.default_user));
-        bp = decodeUri(choosenImage, 200, getActivity());
-
         setupGeofenceSpinner();
 
+        adminProfilePic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CropImage.activity(null).setGuidelines(CropImageView.Guidelines.ON).start(getContext(), AdminSignup_Fragment.this);
+            }
+        });
 
         return view;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // handle result of CropImageActivity
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if (resultCode == RESULT_OK) {
+                choosenImage = result.getUri();
+                if (choosenImage != null) {
+                    ((CircleImageView) getView().findViewById(R.id.adminProfilePic)).setImageURI(result.getUri());
+                } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                    Toast.makeText(getActivity(), "Cropping failed: " + result.getError(), Toast.LENGTH_LONG).show();
+                }
+            }
+        }
     }
 
     private void setupGeofenceSpinner() {
@@ -127,6 +154,7 @@ public class AdminSignup_Fragment extends Fragment {
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
                     geofenceList.clear();
+                    geofenceList.add("Select");
                     List<DocumentSnapshot> geoList = task.getResult().getDocuments();
                     for (int i = 0; i < geoList.size(); i++) {
                         geofenceList.add(geoList.get(i).getId());
@@ -145,8 +173,9 @@ public class AdminSignup_Fragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Log.d(TAG, "spinner item " + geofenceList.get(position));
-                //loadOnlineUsers(geofenceList.get(position));
-                adminGeozone = geofenceList.get(position);
+                if (!geofenceList.get(position).equalsIgnoreCase("Select")) {
+                    adminGeozone = geofenceList.get(position);
+                }
             }
 
             @Override
@@ -156,22 +185,6 @@ public class AdminSignup_Fragment extends Fragment {
         });
     }
 
-   /* private void loadOnlineUsers(String geofenceName) {
-        userProfileRef.whereEqualTo("role","Admin").whereEqualTo("geoZone",geofenceName).addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@javax.annotation.Nullable QuerySnapshot queryDocumentSnapshots, @javax.annotation.Nullable FirebaseFirestoreException e) {
-                if (!queryDocumentSnapshots.isEmpty()) {
-                    adminList.clear();
-                    for (DocumentSnapshot snapshot : queryDocumentSnapshots) {
-                        UserProfile user = snapshot.toObject(UserProfile.class);
-                        adminList.add(user);
-                        offlineAdapter.notifyDataSetChanged();
-                        Log.d(TAG, "inside loadofflineuser : " + user.getDispName());
-                    }
-                }
-            }
-        });
-    }*/
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -188,12 +201,11 @@ public class AdminSignup_Fragment extends Fragment {
 
 
                 if (SessionManager.isNetworkAvaliable(getActivity())) {
-                    if (adminGeozone != null) {
+                    if (adminGeozone != null && choosenImage != null) {
                         if (validation.validate()) {
                             phoneNumber = countryCode.getFullNumberWithPlus();
                             simpleNumber = etMobile.getText().toString();
                             simpleNumber = simpleNumber.replaceAll("\\s+", "");
-                            cCode = countryCode.getSelectedCountryCode();
 
                             //sendOtpOnPhone();
                             progressDialog1 = new ProgressDialog(getActivity());
@@ -203,8 +215,8 @@ public class AdminSignup_Fragment extends Fragment {
 
                             signinWithEmailPass();
                         }
-                    }else {
-                        Toast.makeText(getActivity(), "Select GeoZone for admin.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getActivity(), "Select GeoZone or profile pic for admin.", Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     Log.d(TAG, "No network found");
@@ -216,8 +228,8 @@ public class AdminSignup_Fragment extends Fragment {
     }
 
     private void signinWithEmailPass() {
-        String email = phoneNumber + "@skyspirit.com";
-        String pass = etPassword.getText().toString();
+        email = phoneNumber + "@skyspirit.com";
+        pass = etPassword.getText().toString();
         getDeviceToken();
         mAuth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
@@ -227,6 +239,7 @@ public class AdminSignup_Fragment extends Fragment {
                     final FirebaseUser userInfo = task.getResult().getUser();
                     UserProfileChangeRequest chngName = new UserProfileChangeRequest.Builder()
                             .setDisplayName(etUserName.getText().toString()).build();
+
                     userInfo.updateProfile(chngName);
 
                     addUserInfoToFirebaseDatabase(task);
@@ -238,7 +251,6 @@ public class AdminSignup_Fragment extends Fragment {
                                 addUserInfoToFirebaseDatabase(task);
                             }
                         }
-
                         @Override
                         public void onFailed(String result) {
 
@@ -252,34 +264,67 @@ public class AdminSignup_Fragment extends Fragment {
     private void addUserInfoToFirebaseDatabase(Task<AuthResult> task) {
         if (task.isSuccessful()) {
 
-            DocumentReference newUserRef = adminProfileRef.document(mAuth.getCurrentUser().getUid());
+            StorageReference newProfilePic = profilePicRef.child(mAuth.getCurrentUser().getUid()).child("profilePic.jpg");
+            newProfilePic.putFile(choosenImage).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    newProfilePic.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
 
-            UserProfile userProfile = new UserProfile();
-            userProfile.setName(etUserName.getText().toString());
-            userProfile.setEmail(phoneNumber + "@skyspirit.com");
-            userProfile.setFullPhoneNumber(phoneNumber);
-            userProfile.setPassword(etPassword.getText().toString());
-            userProfile.setGeoZone(adminGeozone);
-            userProfile.setRole("Admin");
-            userProfile.setDeviceToken(deviceToken);
-            userProfile.setUserAdminMail("");
-            newUserRef.set(userProfile).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if (task.isSuccessful()) {
-                        progressDialog1.dismiss();
-                        Intent intent = new Intent(getActivity(), AdminNavigationDashboard.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        getActivity().startActivity(intent);
-                    }
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(getActivity(), "Some error occured.", Toast.LENGTH_SHORT).show();
+                            profilePicUrl = uri.toString();
+                            final FirebaseUser userInfo = mAuth.getCurrentUser();
+                            UserProfileChangeRequest chngProfilePic = new UserProfileChangeRequest.Builder()
+                                    .setPhotoUri(uri).build();
+
+                            userInfo.updateProfile(chngProfilePic);
+                            SaveOtherData();
+
+                            Log.d(TAG, "onSuccess: image url is " + uri.toString());
+                        }
+
+                        private void SaveOtherData() {
+
+                            DocumentReference newUserRef = adminProfileRef.document(mAuth.getCurrentUser().getUid());
+                            UserProfile userProfile = new UserProfile();
+                            userProfile.setName(etUserName.getText().toString());
+                            userProfile.setEmail(email);
+                            userProfile.setFullPhoneNumber(phoneNumber);
+                            userProfile.setPassword(pass);
+                            userProfile.setGeoZone(adminGeozone);
+                            userProfile.setRole("Admin");
+                            userProfile.setDeviceToken(deviceToken);
+                            userProfile.setUserAdminMail("");
+                            userProfile.setUid(mAuth.getUid());
+                            userProfile.setProfilePic(profilePicUrl);
+
+                            newUserRef.set(userProfile).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        progressDialog1.dismiss();
+                                        SaveDefaultValueForAll.saveDefaults(getActivity(), "Admin",email,pass, new StartMyActivity() {
+                                            @Override
+                                            public void startThisActivity(String userType) {
+                                                Intent intent = new Intent(getActivity(), AdminNavigationDashboard.class);
+                                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                                startActivity(intent);
+                                                progressDialog1.dismiss();
+                                            }
+                                        });
+                                    }
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(getActivity(), "Some error occured.", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
+                        }
+                    });
                 }
             });
-
         }
     }
 
@@ -289,7 +334,7 @@ public class AdminSignup_Fragment extends Fragment {
             public void onSuccess(InstanceIdResult instanceIdResult) {
                 deviceToken = instanceIdResult.getToken();
                 Log.d(TAG, " else Token= " + deviceToken);
-                SharedPrefManager.getInstance(getActivity()).saveDeviceToken(deviceToken);
+                SharedPrefManager.getInstance(getActivity()).saveSelfDeviceToken(deviceToken);
             }
         });
         return deviceToken;

@@ -103,7 +103,7 @@
                             android:layout_gravity="center"
                             android:layout_marginTop="@dimen/_10sdp"
                             android:gravity="center"
-                            android:text="TRACK USER"
+                            android:text="GPS OPTIONS"
                             android:textSize="@dimen/_10sdp" />
 
                     </LinearLayout>

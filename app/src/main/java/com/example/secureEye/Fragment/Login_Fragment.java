@@ -144,7 +144,7 @@ public class Login_Fragment extends Fragment {
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                         if (!queryDocumentSnapshots.isEmpty()) {
                             Log.d(TAG, "onSuccess: user");
-                            SaveDefaultValueForAll.saveDefaults(getActivity(), "Others", new StartMyActivity() {
+                            SaveDefaultValueForAll.saveDefaults(getActivity(), "Others", email, password, new StartMyActivity() {
                                 @Override
                                 public void startThisActivity(String userType) {
                                     Intent intent = new Intent(getActivity(), UserNavigationDashboard.class);
@@ -161,7 +161,7 @@ public class Login_Fragment extends Fragment {
 
                                     if (!queryDocumentSnapshots.isEmpty()) {
                                         Log.d(TAG, "onSuccess: admin");
-                                        SaveDefaultValueForAll.saveDefaults(getActivity(), "Admin", new StartMyActivity() {
+                                        SaveDefaultValueForAll.saveDefaults(getActivity(), "Admin",email, password, new StartMyActivity() {
                                             @Override
                                             public void startThisActivity(String userType) {
                                                 Intent intent = new Intent(getActivity(), AdminNavigationDashboard.class);

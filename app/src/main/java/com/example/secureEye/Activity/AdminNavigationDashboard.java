@@ -5,11 +5,14 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.secureEye.Fragment.AddNewUser;
 import com.example.secureEye.Fragment.AdminNavDashboard;
 import com.example.secureEye.Fragment.NavFrag2;
 import com.example.secureEye.Model.User;
@@ -25,6 +28,7 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
+import com.squareup.picasso.Picasso;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -33,15 +37,22 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+
+import java.util.List;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class AdminNavigationDashboard extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = "AdminNavigationDashboar";
+    public static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
     private CollectionReference onlineRef, offlineRef, userProfileRef;
     private FirebaseAuth mAuth;
-    public static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
+
+    private boolean doubleBackToExitPressedOnce = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,12 +84,14 @@ public class AdminNavigationDashboard extends AppCompatActivity implements Navig
         tv.setText(mAuth.getCurrentUser().getDisplayName());
         TextView tv1 = headerView.findViewById(R.id.phoneText);
         tv1.setText(mAuth.getCurrentUser().getEmail());
-        CircleImageView img = headerView.findViewById(R.id.navImage);
-        //img.setImageBitmap(profilePic);
+        CircleImageView profilePic = headerView.findViewById(R.id.navImage);
+        String photoUrl = SharedPrefManager.getInstance(this).getUserProfilePic();
+        Picasso.get().load(photoUrl).into(profilePic);
 
         AdminNavDashboard navFrag1 = new AdminNavDashboard();
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.NavFrameLayout, navFrag1);
+        ft.addToBackStack("AdminNavDashboard");
         ft.commit();
 
     }
@@ -92,17 +105,16 @@ public class AdminNavigationDashboard extends AppCompatActivity implements Navig
         if (id == R.id.nav_dash) {
             AdminNavDashboard navFrag1 = new AdminNavDashboard();
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.addToBackStack(null);
             ft.replace(R.id.NavFrameLayout, navFrag1);
+            ft.addToBackStack("AdminNavDashboard");
             ft.commit();
         } else if (id == R.id.nav_gallery) {
             NavFrag2 navFrag2 = new NavFrag2();
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.addToBackStack(null);
             ft.replace(R.id.NavFrameLayout, navFrag2);
+            ft.addToBackStack("NavFrag2");
             ft.commit();
         } else if (id == R.id.nav_loc_update) {
-
             LocationUpdatesService mService = AppController.getInstance().mService;
             if (mService != null)
                 mService.removeLocationUpdates();
@@ -143,14 +155,15 @@ public class AdminNavigationDashboard extends AppCompatActivity implements Navig
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
-                    String userGeoZone= SharedPrefManager.getInstance(AdminNavigationDashboard.this).getUserGeoZone();
+                    String userGeoZone = SharedPrefManager.getInstance(AdminNavigationDashboard.this).getUserGeoZone();
                     offlineRef.document(mAuth.getCurrentUser().getUid())
-                            .set(new User(mAuth.getCurrentUser().getDisplayName(), mAuth.getCurrentUser().getUid(),userGeoZone, "Offline")).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            .set(new User(mAuth.getCurrentUser().getDisplayName(), mAuth.getCurrentUser().getUid(), userGeoZone, "Offline")).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
 
                                 LocationUpdatesService mService = AppController.getInstance().mService;
+                                if (mService!=null)
                                 mService.removeLocationUpdates();
 
                                 mAuth.signOut();
@@ -253,24 +266,48 @@ public class AdminNavigationDashboard extends AppCompatActivity implements Navig
 
     @Override
     public void onBackPressed() {
-
-        if (getFragmentManager().getBackStackEntryCount() == 0) {
-            this.finish();
-        } else {
-            getFragmentManager().popBackStack();
-        }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-            finishAffinity();
-            finish();
+        }
+
+        /*if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            getSupportFragmentManager().popBackStack();
+            Log.d(TAG, "onBackPressed: entry count");
         } else {
+            Log.d(TAG, "onBackPressed: else entry");
             super.onBackPressed();
             finishAffinity();
             finish();
+        }*/
+
+
+        FragmentManager fm = getSupportFragmentManager();
+        if (fm.getBackStackEntryCount() > 1) {
+            fm.popBackStack();
+            // super.onBackPressed();
+            // return;
+        } else {
+            if (doubleBackToExitPressedOnce) {
+                super.onBackPressed();
+                finishAffinity();
+                finish();
+                return;
+            }
+
+            this.doubleBackToExitPressedOnce = true;
+            Toast.makeText(this, "Press one more time to exit",
+                    Toast.LENGTH_SHORT).show();
+
+            new Handler().postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+
+                    doubleBackToExitPressedOnce = false;
+                }
+            }, 3000);
+
         }
-
-
     }
-
 }

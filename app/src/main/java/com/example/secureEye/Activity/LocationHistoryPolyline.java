@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -44,6 +45,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.kunzisoft.switchdatetime.SwitchDateTimeDialogFragment;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -176,7 +178,7 @@ public class LocationHistoryPolyline extends AppCompatActivity implements OnMapR
                     userAdapter.notifyDataSetChanged();
                     List<DocumentSnapshot> uList = task.getResult().getDocuments();
                     if (uList.size() > 0) {
-                        UserProfile userProfile = new UserProfile("Select", "", "", "", "", "", "", "");
+                        UserProfile userProfile = new UserProfile("Select");
                         userList.add(userProfile);
                         userIdList.add("Select");
                         for (int i = 0; i < uList.size(); i++) {
@@ -250,30 +252,27 @@ public class LocationHistoryPolyline extends AppCompatActivity implements OnMapR
         final Date minDate = calendarMin.getTime();
         final Date maxDate = calendarMax.getTime();
 
-        new SingleDateAndTimePickerDialog.Builder(LocationHistoryPolyline.this)
-                .defaultDate(now)
-                .bottomSheet()
-                .curved()
-                .mainColor(getResources().getColor(R.color.colorPrimaryDark))
-                .displayHours(true)
-                .displayMinutes(true)
-                .displayDays(false)
-                .displayMonth(true)
-                .displayDaysOfMonth(true)
-                .displayYears(true)
-                .displayMonthNumbers(true)
-                .minDateRange(minDate)
-                .maxDateRange(maxDate)
-                .title("Duty Start Time")
-                .listener(new SingleDateAndTimePickerDialog.Listener() {
-                    @Override
-                    public void onDateSelected(Date date) {
-                        selectedStartDate = date;
-                        selectedStartTime.setText(simpleDateFormat.format(date));
-                        selectedEndTime.setEnabled(true);
+        SwitchDateTimeDialogFragment dateTimeDialogFragment=SwitchDateTimeDialogFragment.newInstance(
+                "Duty Start date","Ok", "cancel");
+        dateTimeDialogFragment.setDefaultDateTime(maxDate);
+        dateTimeDialogFragment.setMinimumDateTime(minDate);
+        dateTimeDialogFragment.setMaximumDateTime(maxDate);
+        dateTimeDialogFragment.startAtCalendarView();
 
-                    }
-                }).display();
+        dateTimeDialogFragment.show(getSupportFragmentManager(),"new Date time");
+        dateTimeDialogFragment.setOnButtonClickListener(new SwitchDateTimeDialogFragment.OnButtonClickListener() {
+            @Override
+            public void onPositiveButtonClick(Date date) {
+                selectedStartDate = date;
+                selectedStartTime.setText(simpleDateFormat.format(date));
+                selectedEndTime.setEnabled(true);
+            }
+
+            @Override
+            public void onNegativeButtonClick(Date date) {
+
+            }
+        });
     }
 
     private void setEndTime() {
@@ -284,28 +283,28 @@ public class LocationHistoryPolyline extends AppCompatActivity implements OnMapR
         final Date minDate = selectedStartDate;
         final Date maxDate = calendarMax.getTime();
 
-        new SingleDateAndTimePickerDialog.Builder(LocationHistoryPolyline.this)
-                .defaultDate(selectedStartDate)
-                .bottomSheet()
-                .curved()
-                .mainColor(getResources().getColor(R.color.colorPrimaryDark))
-                .displayHours(true)
-                .displayMinutes(true)
-                .displayDays(false)
-                .displayMonth(true)
-                .displayDaysOfMonth(true)
-                .displayYears(true)
-                .displayMonthNumbers(true)
-                .minDateRange(minDate)
-                .maxDateRange(maxDate)
-                .title("Duty End Time")
-                .listener(new SingleDateAndTimePickerDialog.Listener() {
-                    @Override
-                    public void onDateSelected(Date date) {
-                        selectedEndDate = date;
-                        selectedEndTime.setText(simpleDateFormat.format(date));
-                    }
-                }).display();
+        SwitchDateTimeDialogFragment dateTimeDialogFragment=SwitchDateTimeDialogFragment.newInstance(
+                "Duty End date","Ok", "cancel");
+        dateTimeDialogFragment.setDefaultDateTime(minDate);
+        dateTimeDialogFragment.setMinimumDateTime(minDate);
+        dateTimeDialogFragment.setMaximumDateTime(maxDate);
+        dateTimeDialogFragment.startAtCalendarView();
+
+        dateTimeDialogFragment.show(getSupportFragmentManager(),"new Date time");
+        dateTimeDialogFragment.setOnButtonClickListener(new SwitchDateTimeDialogFragment.OnButtonClickListener() {
+            @Override
+            public void onPositiveButtonClick(Date date) {
+                selectedStartDate = date;
+                selectedEndTime.setText(simpleDateFormat.format(date));
+
+            }
+
+            @Override
+            public void onNegativeButtonClick(Date date) {
+
+            }
+        });
+
     }
 
     private void showOnMap() {
@@ -375,6 +374,16 @@ public class LocationHistoryPolyline extends AppCompatActivity implements OnMapR
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 

@@ -21,29 +21,38 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/userProfilePic"
+                android:layout_width="@dimen/_80sdp"
+                android:layout_height="@dimen/_80sdp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/_20sdp"
+                card_view:civ_border_width="@dimen/_2sdp"
+                card_view:civ_border_color="@color/bg_main"
+                android:src="@drawable/default_user"/>
+
             <EditText
                 android:id="@+id/newUserName"
                 android:layout_width="@dimen/_220sdp"
                 android:layout_height="@dimen/_30sdp"
-                style="@style/editStyle"
+                style="@style/textViewStyleDark"
                 android:layout_marginTop="@dimen/_12sdp"
                 android:hint="@string/userName"
                 android:paddingLeft="@dimen/_15sdp"
                 android:paddingRight="@dimen/_15sdp"
-                android:textSize="@dimen/_12sdp"
+                android:layout_below="@+id/userProfilePic"
                 android:layout_centerHorizontal="true"
                 android:background="@drawable/edittext_rounded" />
             <EditText
                 android:id="@+id/newUserPassword"
                 android:layout_width="@dimen/_220sdp"
                 android:layout_height="@dimen/_30sdp"
-                style="@style/editStyle"
+                style="@style/textViewStyleDark"
                 android:layout_below="@+id/newUserName"
                 android:layout_marginTop="@dimen/_12sdp"
                 android:hint="@string/Password"
                 android:paddingLeft="@dimen/_15sdp"
                 android:paddingRight="@dimen/_15sdp"
-                android:textSize="@dimen/_12sdp"
                 android:background="@drawable/edittext_rounded"
                 android:layout_centerHorizontal="true" />
 
@@ -54,9 +63,9 @@
                 android:background="@drawable/edittext_rounded"
                 android:layout_marginTop="@dimen/_12sdp"
                 android:paddingLeft="@dimen/_5sdp"
-                app:ccp_textSize="@dimen/_12sdp"
+                app:ccp_textSize="@dimen/_10sdp"
                 app:ccp_defaultNameCode="IN"
-                app:ccp_contentColor="@color/colorPrimary"
+                app:ccp_contentColor="@color/bg_main"
                 app:ccp_autoDetectCountry="true"
                 android:layout_alignStart="@+id/newUserPassword"
                 android:layout_below="@+id/newUserPassword">
@@ -67,7 +76,7 @@
                 android:id="@+id/newUserMobile"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/_30sdp"
-                style="@style/editStyle"
+                style="@style/textViewStyleDark"
                 android:layout_below="@+id/newUserPassword"
                 android:layout_marginTop="@dimen/_12sdp"
                 android:hint="@string/Mobile_No"
@@ -76,7 +85,6 @@
                 android:layout_toRightOf="@+id/newUserCountryCode"
                 android:paddingLeft="@dimen/_15sdp"
                 android:paddingRight="@dimen/_15sdp"
-                android:textSize="@dimen/_12sdp"
                 android:layout_alignEnd="@+id/newUserPassword"
                 android:background="@drawable/edittext_rounded"  />
 
@@ -86,6 +94,8 @@
                 android:layout_height="@dimen/_30sdp"
                 android:layout_below="@+id/newUserMobile"
                 android:layout_marginTop="@dimen/_12sdp"
+                android:paddingBottom="@dimen/_3sdp"
+                android:paddingTop="@dimen/_3sdp"
                 android:background="@drawable/spinner_rounded"
                 android:layout_centerHorizontal="true"/>
 
@@ -95,6 +105,8 @@
                 android:layout_height="@dimen/_30sdp"
                 android:layout_below="@+id/newUserGeozoneSpinner"
                 android:layout_marginTop="@dimen/_12sdp"
+                android:paddingBottom="@dimen/_3sdp"
+                android:paddingTop="@dimen/_3sdp"
                 android:background="@drawable/spinner_rounded"
                 android:layout_centerHorizontal="true"/>
 

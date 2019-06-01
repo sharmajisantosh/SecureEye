@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -74,12 +75,11 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import static com.example.secureEye.Services.GeofenceTransitionIntentService.KEY_LATITUDE;
-import static com.example.secureEye.Services.GeofenceTransitionIntentService.KEY_LONGITUDE;
-
 public class MapsTracking extends AppCompatActivity implements OnMapReadyCallback, View.OnClickListener {
 
     private static final String TAG = "MapsTracking";
+    public static final String KEY_LATITUDE = "key_lat";
+    public static final String KEY_LONGITUDE = "key_long";
     public static GoogleMap mMap;
     private OfflineUserAdapter offlineAdapter;
     private OnlineAdapter onlineAdapter;
@@ -140,10 +140,10 @@ public class MapsTracking extends AppCompatActivity implements OnMapReadyCallbac
         onlineRef = Constant_URLS.ONLINE_REF;
         offlineRef = Constant_URLS.OFFLINE_REF;
         geofenceRef = Constant_URLS.GEOFENCE_LIST;
-        isOnlineRef = FirebaseDatabase.getInstance().getReference().child(".info/connected");
+        //isOnlineRef = FirebaseDatabase.getInstance().getReference().child(".info/connected");
 
         //setUpSystem();
-        setAdminDeviceToken();
+        //setAdminDeviceToken();
         loadOfflineUsers();
         loadGeofenceList();
         //loadOnlineUsers();
@@ -158,7 +158,7 @@ public class MapsTracking extends AppCompatActivity implements OnMapReadyCallbac
         });*/
     }
 
-    private void setAdminDeviceToken() {
+   /* private void setAdminDeviceToken() {
         userProfileRef.whereEqualTo("email", "+919268710331@skyspirit.com").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
@@ -172,7 +172,7 @@ public class MapsTracking extends AppCompatActivity implements OnMapReadyCallbac
                 }
             }
         });
-    }
+    }*/
 
     private void loadGeofenceList() {
 
@@ -359,7 +359,7 @@ public class MapsTracking extends AppCompatActivity implements OnMapReadyCallbac
                                     Tracking tracking = documentSnapshot.toObject(Tracking.class);
                                     //Add marker for user location
                                     LatLng otherUserLocation = new LatLng(Double.parseDouble(tracking.getLat()), Double.parseDouble(tracking.getLon()));
-                                    if (hashMapMarker.size()>0) {
+                                    if (hashMapMarker.size()==checkedList.size()) {
                                         Marker thisMarker = hashMapMarker.get(tracking.getDispName());
                                         thisMarker.remove();
                                         hashMapMarker.remove(tracking.getDispName());
@@ -391,7 +391,7 @@ public class MapsTracking extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
-    private void setUpSystem() {
+    /*private void setUpSystem() {
         isOnlineRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -418,8 +418,8 @@ public class MapsTracking extends AppCompatActivity implements OnMapReadyCallbac
                         }
                     });
 
-                 /*   onlineRef.document("All")
-                            .set(new User("All", "All","All", "Online"));*/
+                 *//*   onlineRef.document("All")
+                            .set(new User("All", "All","All", "Online"));*//*
 
                     //onlineAdapter.notifyDataSetChanged();
                     //offlineAdapter.notifyDataSetChanged();
@@ -442,7 +442,7 @@ public class MapsTracking extends AppCompatActivity implements OnMapReadyCallbac
                 }
             }
         });
-    }
+    }*/
 
     private LatLng findNearestPoint(LatLng test, List<LatLng> target) {
         double distance = -1;
@@ -557,6 +557,16 @@ public class MapsTracking extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 }

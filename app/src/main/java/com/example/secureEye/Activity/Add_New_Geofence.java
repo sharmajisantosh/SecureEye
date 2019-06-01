@@ -7,6 +7,8 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -17,6 +19,7 @@ import com.basgeekball.awesomevalidation.AwesomeValidation;
 import com.basgeekball.awesomevalidation.ValidationStyle;
 import com.example.secureEye.R;
 import com.example.secureEye.Utils.Constant_URLS;
+import com.example.secureEye.Utils.TypefaceSpan;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Result;
@@ -52,8 +55,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
-import static com.example.secureEye.Services.GeofenceTransitionIntentService.KEY_LATITUDE;
-import static com.example.secureEye.Services.GeofenceTransitionIntentService.KEY_LONGITUDE;
+import static com.example.secureEye.Activity.MapsTracking.KEY_LATITUDE;
+import static com.example.secureEye.Activity.MapsTracking.KEY_LONGITUDE;
 
 public class Add_New_Geofence extends AppCompatActivity implements View.OnClickListener,
         OnMapReadyCallback, GoogleMap.OnMapLongClickListener, GoogleMap.OnMarkerDragListener,
@@ -80,9 +83,11 @@ public class Add_New_Geofence extends AppCompatActivity implements View.OnClickL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add__new__geofence);
-        SupportMapFragment mapFragment =
-                (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map1);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map1);
         mapFragment.getMapAsync(this);
+        SpannableString str = new SpannableString("New Geofence");
+        str.setSpan(new TypefaceSpan(this,TypefaceSpan.fontName),0, str.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        this.setTitle(str);
 
         if (!Places.isInitialized()) {
             Places.initialize(getApplicationContext(), getResources().getString(R.string.google_maps_key));

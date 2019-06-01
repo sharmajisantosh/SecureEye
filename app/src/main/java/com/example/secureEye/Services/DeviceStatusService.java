@@ -16,12 +16,15 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 
 import com.bumptech.glide.util.LogTime;
+import com.example.secureEye.Activity.UserNavigationDashboard;
+import com.example.secureEye.Model.UserProfile;
 import com.example.secureEye.Utils.Constant_URLS;
 import com.example.secureEye.Utils.SessionManager;
 import com.example.secureEye.Utils.SharedPrefManager;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,7 +52,6 @@ public class DeviceStatusService extends Service {
         networkList=new ArrayList<>();
         batteryReceiver = new BatteryReceiver();
         registerReceiver(batteryReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-
 
     }
 
@@ -87,6 +89,10 @@ public class DeviceStatusService extends Service {
 
         @Override
         public void onReceive(Context context, Intent intent) {
+
+            userAdminMail = SharedPrefManager.getInstance(getApplicationContext()).getUserAdminMail();
+            userAdminDeviceToken = UserNavigationDashboard.userAdminDeviceToken;
+
             int rawlevel = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
             int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
             int level = -1;
@@ -101,6 +107,7 @@ public class DeviceStatusService extends Service {
             if (level < 10) {
                 if (!msg.equalsIgnoreCase("Battery below 10%")) {
                     msg = "Battery below 10%";
+                    if (userAdminDeviceToken!=null)
                     saveNotification(msg);
                 }
             }
@@ -111,10 +118,12 @@ public class DeviceStatusService extends Service {
 
                 if (SessionManager.isNetworkAvaliable(getApplicationContext())) {
                     Log.d(TAG, "internet available ");
+                    if (userAdminDeviceToken!=null)
                     saveNotification(msg);
 
                 }else {
                     Log.d(TAG, "internet not available ");
+                    if (userAdminDeviceToken!=null)
                     saveNotificationInList(msg);
                 }
             }else {
@@ -134,8 +143,7 @@ public class DeviceStatusService extends Service {
     }
 
     private void saveNotificationInList(String msg) {
-        userAdminMail = SharedPrefManager.getInstance(getApplicationContext()).getUserAdminMail();
-        userAdminDeviceToken = SharedPrefManager.getInstance(getApplicationContext()).getUserAdminDeviceTokenId();
+
         Map<String, Object> notificationMessage = new HashMap<>();
         notificationMessage.put("message", msg);
         notificationMessage.put("from_id", mAuth.getCurrentUser().getUid());
@@ -149,8 +157,6 @@ public class DeviceStatusService extends Service {
 
     private void saveNotification(String msg) {
 
-        userAdminMail = SharedPrefManager.getInstance(getApplicationContext()).getUserAdminMail();
-        userAdminDeviceToken = SharedPrefManager.getInstance(getApplicationContext()).getUserAdminDeviceTokenId();
         Map<String, Object> notificationMessage = new HashMap<>();
         notificationMessage.put("message", msg);
         notificationMessage.put("from_id", mAuth.getCurrentUser().getUid());

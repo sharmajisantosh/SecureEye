@@ -70,6 +70,11 @@ public class UserNavDashboard extends Fragment implements View.OnClickListener {
         switch (v.getId()){
 
             case R.id.btnUserMessaging:
+                UserMessagingFrag navFrag1 = new UserMessagingFrag();
+                FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+                ft.addToBackStack("UserMessagingFrag");
+                ft.replace(R.id.NavFrameLayout1, navFrag1);
+                ft.commit();
                 break;
 
             case R.id.btnUserTasks:
@@ -80,7 +85,6 @@ public class UserNavDashboard extends Fragment implements View.OnClickListener {
 
             case R.id.btnUserIncidentReport:
                 break;
-
         }
     }
 

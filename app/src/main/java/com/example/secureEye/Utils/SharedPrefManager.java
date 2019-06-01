@@ -10,7 +10,11 @@ public class SharedPrefManager {
     private static final String GEOZONE="Geozone";
     private static final String USER_ADMIN_MAIL="UserAdminMail";
     private static final String USER_TYPE="UserType";
-    private static final String USER_ADMIN_DEVICE_TOKEN="UserAdminDeviceTokenId";
+    private static final String USER_ADMIN_ID="UserAdminId";
+    private static final String USER_PROFILE_PIC="UserProfilePic";
+    private static final String USER_EMAIL="UserEmail";
+    private static final String USER_PASSWORD="UserPassword";
+    private static final String USER_UID="UserUid";
 
     private static SharedPrefManager mInstance;
     private static Context mCtx;
@@ -27,7 +31,7 @@ public class SharedPrefManager {
     }
 
     //this method will save the device token to shared preferences
-    public boolean saveDeviceToken(String token){
+    public boolean saveSelfDeviceToken(String token){
         SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(TAG_TOKEN, token);
@@ -102,21 +106,67 @@ public class SharedPrefManager {
     }
 
     //this method will save the role to shared preferences
-    public boolean saveUserAdminDeviceTokenId(String userType){
+    public boolean saveUserAdminId(String userType){
         SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(USER_ADMIN_DEVICE_TOKEN, userType);
+        editor.putString(USER_ADMIN_ID, userType);
         editor.apply();
         return true;
     }
 
     //this method will fetch the role from shared preferences
-    public String getUserAdminDeviceTokenId(){
+    public String getUserAdminId(){
         SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
-        return  sharedPreferences.getString(USER_ADMIN_DEVICE_TOKEN, null);
+        return  sharedPreferences.getString(USER_ADMIN_ID, null);
     }
 
 
+    public boolean saveUserProfilePic(String profilePic){
+        SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(USER_PROFILE_PIC, profilePic);
+        editor.apply();
+        return true;
+    }
 
+    public String getUserProfilePic(){
+        SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        return  sharedPreferences.getString(USER_PROFILE_PIC, null);
+    }
 
+    public void saveUserEmail(String email) {
+        SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(USER_EMAIL, email);
+        editor.apply();
+    }
+
+    public String getUserEmail(){
+        SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        return  sharedPreferences.getString(USER_EMAIL, null);
+    }
+
+    public void saveUserPassword(String password) {
+        SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(USER_PASSWORD, password);
+        editor.apply();
+    }
+
+    public String getUserPassword(){
+        SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        return  sharedPreferences.getString(USER_PASSWORD, null);
+    }
+
+    public void saveUserUid(String uId) {
+        SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(USER_UID, uId);
+        editor.apply();
+    }
+
+    public String getUserUid(){
+        SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        return  sharedPreferences.getString(USER_UID, null);
+    }
 }

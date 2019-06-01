@@ -14,10 +14,12 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/navImage1"
-        android:layout_width="@dimen/_50sdp"
-        android:layout_height="@dimen/_50sdp"
+        android:layout_width="@dimen/_60sdp"
+        android:layout_height="@dimen/_60sdp"
         android:contentDescription="@string/nav_header_desc"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
+        app:civ_border_width="@dimen/_2sdp"
+        app:civ_border_color="@color/bg_main"
         android:src="@drawable/default_user"/>
 
     <TextView
@@ -32,7 +34,6 @@
         android:id="@+id/phoneText1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/_12sdp"
         android:text="@string/nav_header_subtitle" />
 
 </LinearLayout>

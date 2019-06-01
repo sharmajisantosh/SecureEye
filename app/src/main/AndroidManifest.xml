@@ -15,9 +15,11 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.BATTERY_STATS"
+    <uses-permission
+        android:name="android.permission.BATTERY_STATS"
         tools:ignore="ProtectedPermissions" />
 
     <application
@@ -29,13 +31,17 @@
         android:roundIcon="@drawable/app_logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activity.LocationHistoryPolyline"></activity>
+        <activity android:name=".Activity.LocationHistoryPolyline"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".Activity.UserNavigationDashboard"
             android:label="@string/title_activity_user_navigation_drawer"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".Activity.Show_Geofence" />
-        <activity android:name=".Activity.Add_New_Geofence" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".Activity.Show_Geofence"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".Activity.Add_New_Geofence"
+            android:screenOrientation="portrait"/>
 
         <uses-library
             android:name="org.apache.http.legacy"
@@ -56,7 +62,8 @@
             android:name=".Activity.MapsTracking"
             android:label="@string/title_activity_maps_tracking"
             android:screenOrientation="portrait" />
-        <activity android:name=".Activity.ListOnline" />
+        <activity android:name=".Activity.ListOnline"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".Activity.AdminNavigationDashboard"
             android:label="@string/title_activity_navigation_dashboard"
@@ -81,7 +88,6 @@
             android:name=".Services.LocationUpdatesService"
             android:enabled="true"
             android:exported="true" />
-        <service android:name=".Services.GeofenceTransitionIntentService" />
         <service
             android:name=".Services.NotificationService"
             android:exported="true"
@@ -96,9 +102,9 @@
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
-        <service android:name=".Services.DeviceStatusService"
-            android:exported="false">
-        </service>
+        <service
+            android:name=".Services.DeviceStatusService"
+            android:exported="false"></service>
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"

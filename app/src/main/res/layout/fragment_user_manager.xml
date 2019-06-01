@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg_main"
-    tools:context=".Fragment.GuardManager">
+    tools:context=".Fragment.UserManager">
 
     <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
         android:id="@+id/relatLayout0"
@@ -25,7 +25,7 @@
             android:padding="@dimen/_8sdp">
 
             <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/btnNewGuard"
+                android:id="@+id/btnNewUser"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
@@ -59,14 +59,14 @@
                         android:layout_gravity="center"
                         android:layout_marginTop="@dimen/_10sdp"
                         android:gravity="center"
-                        android:text="NEW\nGUARD"
+                        android:text="NEW\nUSER"
                         android:textSize="@dimen/_10sdp" />
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/btnModifyGuard"
+                android:id="@+id/btnModifyUser"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
@@ -100,17 +100,17 @@
                         android:layout_gravity="center"
                         android:layout_marginTop="@dimen/_10sdp"
                         android:gravity="center"
-                        android:text="MODIFY\nGUARD"
+                        android:text="MODIFY\nUSER"
                         android:textSize="@dimen/_10sdp" />
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/btnDeleteGuard"
+                android:id="@+id/btnDeleteUser"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/btnNewGuard"
+                android:layout_below="@id/btnNewUser"
                 android:layout_alignParentLeft="true"
                 android:layout_marginLeft="@dimen/_20sdp"
                 android:layout_marginTop="@dimen/_10sdp"
@@ -142,7 +142,7 @@
                         android:layout_gravity="center"
                         android:layout_marginTop="@dimen/_10sdp"
                         android:gravity="center"
-                        android:text="DELETE\nGUARD"
+                        android:text="DELETE\nUSER"
                         android:textSize="@dimen/_10sdp" />
 
                 </LinearLayout>

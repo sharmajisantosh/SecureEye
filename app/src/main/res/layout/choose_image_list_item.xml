@@ -3,7 +3,7 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="@dimen/_30sdp">
     <TextView
-        android:id="@+id/tvGeofenceName"
+        android:id="@+id/tvChoosenImageName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         style="@style/textViewStyleDark"
@@ -11,6 +11,7 @@
         android:text="current user"
         android:paddingTop="@dimen/_5sdp"
         android:paddingBottom="@dimen/_5sdp"
+        android:textSize="@dimen/_12sdp"
         android:layout_marginLeft="@dimen/_10sdp"
         />
 

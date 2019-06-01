@@ -10,7 +10,10 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 
+import com.example.secureEye.Fragment.AdminNavDashboard;
+import com.example.secureEye.Fragment.UserNavDashboard;
 import com.example.secureEye.Model.User;
+import com.example.secureEye.Model.UserProfile;
 import com.example.secureEye.R;
 import com.example.secureEye.Services.AppController;
 import com.example.secureEye.Services.LocationHelper;
@@ -22,6 +25,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 
@@ -30,7 +34,9 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.maps.android.PolyUtil;
+import com.squareup.picasso.Picasso;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -39,6 +45,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -56,19 +64,21 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import static com.example.secureEye.Activity.AdminNavigationDashboard.REQUEST_PERMISSIONS_REQUEST_CODE;
-import static com.example.secureEye.Services.GeofenceTransitionIntentService.KEY_LATITUDE;
-import static com.example.secureEye.Services.GeofenceTransitionIntentService.KEY_LONGITUDE;
+import static com.example.secureEye.Activity.MapsTracking.KEY_LATITUDE;
+import static com.example.secureEye.Activity.MapsTracking.KEY_LONGITUDE;
 
 public class UserNavigationDashboard extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    private static String TAG="UserNavigationDashboard";
-    private CollectionReference onlineRef, offlineRef,geofenceRef;
+    private static String TAG = "UserNavigationDashboard";
+    private CollectionReference onlineRef, offlineRef, geofenceRef, adminProfileRef;
     private FirebaseAuth mAuth;
     private List<LatLng> mPolygonPoints = new ArrayList<>();
     private MyReceiver myReceiver;
     private CollectionReference notificationRef;
     private String userAdminMail;
-    private String userAdminDeviceToken;
+    private String userAdminId;
+    public static String userAdminDeviceToken;
+    private boolean doubleBackToExitPressedOnce = false;
     String msg = "";
 
 
@@ -82,11 +92,12 @@ public class UserNavigationDashboard extends AppCompatActivity implements Naviga
 
         mAuth = FirebaseAuth.getInstance();
         notificationRef = Constant_URLS.NOTIFICATION_DATA;
-        userAdminMail= SharedPrefManager.getInstance(getApplicationContext()).getUserAdminMail();
-        userAdminDeviceToken= SharedPrefManager.getInstance(getApplicationContext()).getUserAdminDeviceTokenId();
+        userAdminMail = SharedPrefManager.getInstance(getApplicationContext()).getUserAdminMail();
+        userAdminId = SharedPrefManager.getInstance(getApplicationContext()).getUserAdminId();
         onlineRef = Constant_URLS.ONLINE_REF;
         offlineRef = Constant_URLS.OFFLINE_REF;
         geofenceRef = Constant_URLS.GEOFENCE_LIST;
+        adminProfileRef = Constant_URLS.ADMIN_PROFILE_REF;
 
         if (!checkPermissions()) {
             requestPermissions();
@@ -109,12 +120,20 @@ public class UserNavigationDashboard extends AppCompatActivity implements Naviga
         tv.setText(mAuth.getCurrentUser().getDisplayName());
         TextView tv1 = headerView.findViewById(R.id.phoneText1);
         tv1.setText(mAuth.getCurrentUser().getEmail());
-        CircleImageView img = headerView.findViewById(R.id.navImage1);
+        CircleImageView profilePic = headerView.findViewById(R.id.navImage1);
+        String photoUrl = SharedPrefManager.getInstance(this).getUserProfilePic();
+        Picasso.get().load(photoUrl).into(profilePic);
+
+        UserNavDashboard navFrag1 = new UserNavDashboard();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.NavFrameLayout1, navFrag1);
+        ft.addToBackStack("UserNavDashboard");
+        ft.commit();
 
     }
 
     private void getPolygonPoints() {
-        String userGeoZone=SharedPrefManager.getInstance(UserNavigationDashboard.this).getUserGeoZone();
+        String userGeoZone = SharedPrefManager.getInstance(UserNavigationDashboard.this).getUserGeoZone();
 
         geofenceRef.document(userGeoZone).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -147,20 +166,20 @@ public class UserNavigationDashboard extends AppCompatActivity implements Naviga
             if (location != null) {
 
                 //Toast.makeText(UserNavigationDashboard.this, "new location found is this: " + LocationHelper.getLocationText(location), Toast.LENGTH_SHORT).show();
-                if (mPolygonPoints.size()>0) {
+                if (mPolygonPoints.size() > 0) {
                     if (PolyUtil.containsLocation(location.getLatitude(), location.getLongitude(), mPolygonPoints, true)) {
                         Log.d(TAG, "inside the geofence");
                         if (!msg.equalsIgnoreCase("Entered the geofence.")) {
                             msg = "Entered the geofence.";
                             saveNotificationToServer(msg);
-                            Toast.makeText(context, "inside location", Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(context, "inside location", Toast.LENGTH_SHORT).show();
                         }
                     } else {
                         Log.d(TAG, "outside the geofence");
                         if (!msg.equalsIgnoreCase("Exited the geofence.")) {
                             msg = "Exited the geofence.";
                             saveNotificationToServer(msg);
-                            Toast.makeText(context, "outside location", Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(context, "outside location", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
@@ -170,23 +189,33 @@ public class UserNavigationDashboard extends AppCompatActivity implements Naviga
 
     private void saveNotificationToServer(String msg) {
 
-        Map<String, Object> notificationMessage = new HashMap<>();
-        notificationMessage.put("message", msg);
-        notificationMessage.put("from_id", mAuth.getCurrentUser().getUid());
-        notificationMessage.put("from_name", mAuth.getCurrentUser().getDisplayName());
-        notificationMessage.put("to_admin", userAdminDeviceToken);
-        notificationMessage.put("admin_mail", userAdminMail);
-        notificationMessage.put("timeStamp", LocationHelper.getGMTTime());
-
-        Log.d(TAG, "saveNotificationToServer: " + userAdminDeviceToken);
-
-        notificationRef.document("GPS_Notification").collection(LocationHelper.getDate())
-                .document(String.valueOf(System.currentTimeMillis())).set(notificationMessage).addOnSuccessListener(new OnSuccessListener<Void>() {
+        adminProfileRef.document(userAdminId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
-            public void onSuccess(Void aVoid) {
-                Toast.makeText(getApplicationContext(), "Notification sent", Toast.LENGTH_SHORT).show();
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                UserProfile user = documentSnapshot.toObject(UserProfile.class);
+                Log.d(TAG, "" + user.getName());
+                userAdminDeviceToken = user.getDeviceToken();
+
+                Map<String, Object> notificationMessage = new HashMap<>();
+                notificationMessage.put("message", msg);
+                notificationMessage.put("from_id", mAuth.getCurrentUser().getUid());
+                notificationMessage.put("from_name", mAuth.getCurrentUser().getDisplayName());
+                notificationMessage.put("to_admin", userAdminDeviceToken);
+                notificationMessage.put("admin_mail", userAdminMail);
+                notificationMessage.put("timeStamp", LocationHelper.getGMTTime());
+
+                Log.d(TAG, "saveNotificationToServer: " + userAdminDeviceToken);
+
+                notificationRef.document("GPS_Notification").collection(LocationHelper.getDate())
+                        .document(String.valueOf(System.currentTimeMillis())).set(notificationMessage).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        //Toast.makeText(getApplicationContext(), "Notification sent", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
+
     }
 
     @Override
@@ -194,12 +223,45 @@ public class UserNavigationDashboard extends AppCompatActivity implements Naviga
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-            finishAffinity();
-            finish();
+        }
+
+        /*if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            getSupportFragmentManager().popBackStack();
+            Log.d(TAG, "onBackPressed: entry count");
         } else {
+            Log.d(TAG, "onBackPressed: else entry");
             super.onBackPressed();
             finishAffinity();
             finish();
+        }*/
+
+
+        FragmentManager fm = getSupportFragmentManager();
+        if (fm.getBackStackEntryCount() > 1) {
+            fm.popBackStack();
+            // super.onBackPressed();
+            // return;
+        } else {
+            if (doubleBackToExitPressedOnce) {
+                super.onBackPressed();
+                finishAffinity();
+                finish();
+                return;
+            }
+
+            this.doubleBackToExitPressedOnce = true;
+            Toast.makeText(this, "Press one more time to exit",
+                    Toast.LENGTH_SHORT).show();
+
+            new Handler().postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+
+                    doubleBackToExitPressedOnce = false;
+                }
+            }, 3000);
+
         }
     }
 
@@ -210,6 +272,11 @@ public class UserNavigationDashboard extends AppCompatActivity implements Naviga
         int id = item.getItemId();
 
         if (id == R.id.nav_user_dash) {
+            UserNavDashboard navFrag1 = new UserNavDashboard();
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.NavFrameLayout1, navFrag1);
+            ft.addToBackStack("UserNavDashboard");
+            ft.commit();
             // Handle the camera action
         } else if (id == R.id.nav_user_gallery) {
 
@@ -219,7 +286,7 @@ public class UserNavigationDashboard extends AppCompatActivity implements Naviga
 
         } else if (id == R.id.nav_user_profile) {
 
-        }else if (id == R.id.nav_user_logout) {
+        } else if (id == R.id.nav_user_logout) {
 
             userLogout();
         }
@@ -239,14 +306,15 @@ public class UserNavigationDashboard extends AppCompatActivity implements Naviga
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
-                    String userGeoZone=SharedPrefManager.getInstance(UserNavigationDashboard.this).getUserGeoZone();
+                    String userGeoZone = SharedPrefManager.getInstance(UserNavigationDashboard.this).getUserGeoZone();
                     offlineRef.document(mAuth.getCurrentUser().getUid())
-                            .set(new User(mAuth.getCurrentUser().getDisplayName(), mAuth.getCurrentUser().getUid(),userGeoZone, "Offline")).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            .set(new User(mAuth.getCurrentUser().getDisplayName(), mAuth.getCurrentUser().getUid(), userGeoZone, "Offline")).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
 
                                 LocationUpdatesService mService = AppController.getInstance().mService;
+                                if (mService!=null)
                                 mService.removeLocationUpdates();
 
                                 mAuth.signOut();
@@ -316,4 +384,5 @@ public class UserNavigationDashboard extends AppCompatActivity implements Naviga
         if (mService != null)
             mService.requestLocationUpdates();
     }
+
 }

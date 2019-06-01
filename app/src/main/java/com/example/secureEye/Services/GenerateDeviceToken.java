@@ -39,6 +39,6 @@ public class GenerateDeviceToken extends FirebaseMessagingService {
 
     private void storeToken(String token) {
         //we will save the token in sharedpreferences later
-        SharedPrefManager.getInstance(getApplicationContext()).saveDeviceToken(token);
+        SharedPrefManager.getInstance(getApplicationContext()).saveSelfDeviceToken(token);
     }
 }

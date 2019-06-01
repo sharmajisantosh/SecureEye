@@ -35,7 +35,7 @@ public class GPS_Options extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_gps__options, container, false);
-        SpannableString str = new SpannableString("Admin");
+        SpannableString str = new SpannableString("GPS Options");
         str.setSpan(new TypefaceSpan(getActivity(),TypefaceSpan.fontName),0, str.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         getActivity().setTitle(str);
 
