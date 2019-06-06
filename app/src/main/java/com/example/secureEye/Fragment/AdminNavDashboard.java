@@ -3,25 +3,14 @@ package com.example.secureEye.Fragment;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.Spanned;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.example.secureEye.R;
 import com.example.secureEye.Utils.TypefaceSpan;
-import com.google.android.gms.dynamic.IFragmentWrapper;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.EmailAuthCredential;
-import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
-import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -33,6 +22,7 @@ public class AdminNavDashboard extends Fragment implements View.OnClickListener 
     private CardView btnGPSManager;
     private CardView btnDutySchedular;
     private CardView btnIncidentReport;
+    private CardView btnMessaging;
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     @Override
@@ -48,11 +38,13 @@ public class AdminNavDashboard extends Fragment implements View.OnClickListener 
         btnGPSManager = view.findViewById(R.id.btnGPSManager);
         btnDutySchedular = view.findViewById(R.id.btnDutySchedular);
         btnIncidentReport = view.findViewById(R.id.btnIncidentReport);
+        btnMessaging=view.findViewById(R.id.btnMessaging);
 
         btnGuardManager.setOnClickListener(this);
         btnGPSManager.setOnClickListener(this);
         btnDutySchedular.setOnClickListener(this);
         btnIncidentReport.setOnClickListener(this);
+        btnMessaging.setOnClickListener(this);
 
         return view;
     }
@@ -77,25 +69,20 @@ public class AdminNavDashboard extends Fragment implements View.OnClickListener 
                 break;
 
             case R.id.btnDutySchedular:
-                //updateAdminMail();
+
                 break;
 
             case R.id.btnIncidentReport:
                 break;
 
-        }
-    }
+            case R.id.btnMessaging:
+                AdminViewMessagesList adminViewMessage = new AdminViewMessagesList();
+                FragmentTransaction ft2 = getActivity().getSupportFragmentManager().beginTransaction();
+                ft2.addToBackStack("userMessaging");
+                ft2.replace(R.id.NavFrameLayout, adminViewMessage);
+                ft2.commit();
+                break;
 
-    private void updateAdminMail() {
-        Log.d(TAG, "updateAdminMail: clicked");
-        FirebaseUser user1 = mAuth.getCurrentUser();
-        user1.updateEmail("+918447262786@skyspirit.com").addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()) {
-                    Toast.makeText(getActivity(), "Updated mail", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+        }
     }
 }

@@ -43,6 +43,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.util.HashMap;
@@ -87,7 +88,7 @@ public class LocationUpdatesService extends Service {
                 onNewLocation(locationResult.getLastLocation());
             }
         };
-        batteryService=new Intent(this, DeviceStatusService.class);
+        batteryService = new Intent(this, DeviceStatusService.class);
 
         createLocationRequest();
         getLastLocation();
@@ -177,17 +178,22 @@ public class LocationUpdatesService extends Service {
         // do nothing. Otherwise, we make this service a foreground service.
         if (!mChangingConfiguration && LocationHelper.requestingLocationUpdates(this)) {
             Log.d(TAG, "Starting foreground service");
-            /*
             // If targeting O, use the following code.
             if (Build.VERSION.SDK_INT == Build.VERSION_CODES.O) {
-                mNotificationManager.startServiceInForeground(new Intent(this,
-                        LocationUpdatesService.class), NOTIFICATION_ID, getNotification());
+                /*mNotificationManager.startServiceInForeground(new Intent(this,
+                        LocationUpdatesService.class), NOTIFICATION_ID, getNotification());*/
+                if (serviceIsRunningInForeground(this)) {
+                    startForegroundService(new Intent(getApplicationContext(), LocationUpdatesService.class));
+                }else {
+                    startService(new Intent(getApplicationContext(), LocationUpdatesService.class));
+                }
+
+                //ContextCompat.startForegroundService(getApplicationContext(), new Intent(getApplicationContext(), LocationUpdatesService.class));
             } else {
                 startForeground(NOTIFICATION_ID, getNotification());
             }
-             */
 
-            startForeground(NOTIFICATION_ID, getNotification());
+            //startForeground(NOTIFICATION_ID, getNotification());
 
 
         }
@@ -208,7 +214,19 @@ public class LocationUpdatesService extends Service {
     public void requestLocationUpdates() {
         Log.i(TAG, "Requesting location updates");
         LocationHelper.setRequestingLocationUpdates(getApplicationContext(), true);
-        startService(new Intent(getApplicationContext(), LocationUpdatesService.class));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // Update notification content if running as a foreground service.
+            if (serviceIsRunningInForeground(this)) {
+                startForegroundService(new Intent(getApplicationContext(), LocationUpdatesService.class));
+            }else {
+                startService(new Intent(getApplicationContext(), LocationUpdatesService.class));
+            }
+
+        } else {
+            startService(new Intent(getApplicationContext(), LocationUpdatesService.class));
+        }
+
+
         try {
             mFusedLocationClient.requestLocationUpdates(mLocationRequest,
                     mLocationCallback, Looper.myLooper());
@@ -308,12 +326,9 @@ public class LocationUpdatesService extends Service {
         intent.putExtra(EXTRA_LOCATION, location);
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
 
-       /* // Update notification content if running as a foreground service.
-        if (serviceIsRunningInForeground(this)) {
-            //mNotificationManager.notify(NOTIFICATION_ID, getNotification());
-            // Getting location when notification was call.
-            latitude = location.getLatitude();
-            longitude = location.getLongitude();
+        // Update notification content if running as a foreground service.
+        /*if (serviceIsRunningInForeground(this)) {
+            mNotificationManager.notify(NOTIFICATION_ID, getNotification());
         }*/
     }
 
@@ -358,53 +373,53 @@ public class LocationUpdatesService extends Service {
     /**
      * Save a value in realtime to firestore when user in background
      * For foreground you have to call same method to activity
-     * */
+     */
 
     private void SavetoServer() {
         mAuth = FirebaseAuth.getInstance();
-        String deviceId=SharedPrefManager.getInstance(getApplicationContext()).getDeviceToken();
-        String userUid=SharedPrefManager.getInstance(getApplicationContext()).getUserUid();
+        String deviceId = SharedPrefManager.getInstance(getApplicationContext()).getDeviceToken();
+        String userUid = SharedPrefManager.getInstance(getApplicationContext()).getUserUid();
 
-            locationsRef.document(userUid).update("lat", String.valueOf(mLocation.getLatitude()),
-                    "lon", String.valueOf(mLocation.getLongitude()),
-                    "timeStamp", LocationHelper.getGMTTimeAsDate()).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    HashMap<String, Object> newLocationEntry = new HashMap<>();
-                    newLocationEntry.put("uid", userUid);
-                    newLocationEntry.put("lat", String.valueOf(mLocation.getLatitude()));
-                    newLocationEntry.put("lon", String.valueOf(mLocation.getLongitude()));
-                    newLocationEntry.put("dispName", mAuth.getCurrentUser().getDisplayName());
-                    newLocationEntry.put("deviceId", deviceId);
-                    newLocationEntry.put("timeStamp", LocationHelper.getGMTTimeAsDate());
-                    locationsRef.document(mAuth.getUid()).set(newLocationEntry).addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
+        locationsRef.document(userUid).update("lat", String.valueOf(mLocation.getLatitude()),
+                "lon", String.valueOf(mLocation.getLongitude()),
+                "timeStamp", LocationHelper.getGMTTimeAsDate()).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                HashMap<String, Object> newLocationEntry = new HashMap<>();
+                newLocationEntry.put("uid", userUid);
+                newLocationEntry.put("lat", String.valueOf(mLocation.getLatitude()));
+                newLocationEntry.put("lon", String.valueOf(mLocation.getLongitude()));
+                newLocationEntry.put("dispName", mAuth.getCurrentUser().getDisplayName());
+                newLocationEntry.put("deviceId", deviceId);
+                newLocationEntry.put("timeStamp", LocationHelper.getGMTTimeAsDate());
+                locationsRef.document(mAuth.getUid()).set(newLocationEntry).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
 
-                        }
-                    });
-                }
-            });
+                    }
+                });
+            }
+        });
 
 
-            LocationHistoryModel loc = new LocationHistoryModel();
-            loc.setLat(String.valueOf(mLocation.getLatitude()));
-            loc.setLon(String.valueOf(mLocation.getLongitude()));
-            loc.setDeviceId(deviceId);
-            loc.setTimeStamp(LocationHelper.getGMTTimeAsDate());
-            //loc.setTimeStamp(null);
+        LocationHistoryModel loc = new LocationHistoryModel();
+        loc.setLat(String.valueOf(mLocation.getLatitude()));
+        loc.setLon(String.valueOf(mLocation.getLongitude()));
+        loc.setDeviceId(deviceId);
+        loc.setTimeStamp(LocationHelper.getGMTTimeAsDate());
+        //loc.setTimeStamp(null);
 
-            locationHistoryRef.document(userUid).collection(LocationHelper.getDate())
-                    .document("" + System.currentTimeMillis())
-                    .set(loc).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    //Toast.makeText(LocationUpdatesService.this, "History saved", Toast.LENGTH_SHORT).show();
-                }
-            });
+        locationHistoryRef.document(userUid).collection(LocationHelper.getDate())
+                .document("" + System.currentTimeMillis())
+                .set(loc).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                //Toast.makeText(LocationUpdatesService.this, "History saved", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

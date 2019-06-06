@@ -54,6 +54,7 @@ public class UserManager extends Fragment implements View.OnClickListener {
             case R.id.btnNewUser:
                 AddNewUser addNewUser = new AddNewUser();
                 FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+                ft.addToBackStack("AddNewUser");
                 ft.replace(R.id.NavFrameLayout, addNewUser);
                 ft.commit();
                 break;
@@ -61,6 +62,7 @@ public class UserManager extends Fragment implements View.OnClickListener {
             case R.id.btnModifyUser:
                 UpdateUser updateUser = new UpdateUser();
                 FragmentTransaction ft1 = getActivity().getSupportFragmentManager().beginTransaction();
+                ft1.addToBackStack("UpdateUser");
                 ft1.replace(R.id.NavFrameLayout, updateUser);
                 ft1.commit();
                 break;
@@ -68,6 +70,7 @@ public class UserManager extends Fragment implements View.OnClickListener {
             case R.id.btnDeleteUser:
                 DeleteUser deleteUser = new DeleteUser();
                 FragmentTransaction ft2 = getActivity().getSupportFragmentManager().beginTransaction();
+                ft2.addToBackStack("UpdateUser");
                 ft2.replace(R.id.NavFrameLayout, deleteUser);
                 ft2.commit();
                 break;

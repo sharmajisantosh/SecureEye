@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_main"
+    tools:context=".Fragment.AdminViewMessage">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/relatLayout17"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="@dimen/_12sdp"
+            android:layout_marginTop="@dimen/_20sdp"
+            android:layout_marginRight="@dimen/_12sdp"
+            android:layout_marginBottom="@dimen/_100sdp"
+            card_view:cardCornerRadius="@dimen/_10sdp"
+            card_view:cardElevation="@dimen/_5sdp">
+
+            <RelativeLayout
+                android:id="@+id/relatLayout237"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="@dimen/_5sdp">
+
+                <TextView
+                    android:id="@+id/text4"
+                    style="@style/textViewStyleDarkBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:gravity="center"
+                    android:text="Images: "
+                    android:textSize="@dimen/_10sdp" />
+                <RelativeLayout
+                    android:id="@+id/relatLayout240"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/text4">
+
+                <androidx.viewpager.widget.ViewPager
+                    android:id="@+id/messageViewPager"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_150sdp">
+
+                </androidx.viewpager.widget.ViewPager>
+
+                <com.viewpagerindicator.CirclePageIndicator
+                    android:id="@+id/indicator"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:gravity="bottom"
+                    android:padding="10dip"
+                    app:centered="true"
+                    app:fillColor="#df0623"
+                    app:pageColor="#fff"
+                    app:snap="false" />
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/text5"
+                    style="@style/textViewStyleDarkBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:gravity="center"
+                    android:text="Message: "
+                    android:layout_below="@+id/relatLayout240"
+                    android:textSize="@dimen/_10sdp" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textInputLayout12"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/text5">
+
+                    <EditText
+                        android:id="@+id/etShowMessage"
+                        style="@style/editStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_120sdp"
+                        android:background="@drawable/edittext_rounded"
+                        android:gravity="top|left"
+                        android:inputType="textMultiLine"
+                        android:padding="@dimen/_10sdp"
+                        android:textSize="@dimen/_12sdp" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:id="@+id/text6"
+                    style="@style/textViewStyleDarkBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:gravity="center"
+                    android:text="Audio: "
+                    android:layout_below="@+id/textInputLayout12"
+                    android:textSize="@dimen/_10sdp" />
+
+                <RelativeLayout
+                    android:id="@+id/relatLayout241"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_20sdp"
+                    android:layout_below="@+id/textInputLayout12">
+
+                    <SeekBar
+                        android:id="@+id/audioSeekbar"
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center" />
+
+                    <TextView
+                        android:id="@+id/tvAudioStartTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/textViewStyleDark"
+                        android:text="00:00"
+                        android:layout_below="@+id/audioSeekbar"
+                        android:paddingBottom="@dimen/_5sdp"
+                        android:layout_marginLeft="@dimen/_10sdp"
+                        />
+
+
+                    <TextView
+                        android:id="@+id/tvAudioTotalTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/textViewStyleDark"
+                        android:text="00:00"
+                        android:layout_below="@+id/audioSeekbar"
+                        android:paddingBottom="@dimen/_5sdp"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginLeft="@dimen/_10sdp" />
+
+                    <ImageView
+                        android:id="@+id/audioPlay"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/_4sdp"
+                        android:layout_centerInParent="true"
+                        android:layout_below="@+id/audioSeekbar"
+                        android:src="@drawable/play_icon"/>
+
+                    <ImageView
+                        android:id="@+id/audioStop"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/_4sdp"
+                        android:layout_centerInParent="true"
+                        android:layout_toRightOf="@+id/audioPlay"
+                        android:layout_below="@+id/audioSeekbar"
+                        android:src="@drawable/stop_icon"/>
+
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/text7"
+                    style="@style/textViewStyleDarkBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:gravity="center"
+                    android:text="Video: "
+                    android:layout_below="@+id/relatLayout241"
+                    android:textSize="@dimen/_10sdp" />
+
+
+                <FrameLayout
+                    android:id="@+id/videoFrameLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_180sdp"
+                    android:layout_below="@+id/text7"
+                    android:background="@color/quantum_black_100"
+                    android:layout_marginBottom="@dimen/_20sdp">
+
+                    <com.github.rtoshiro.view.video.FullscreenVideoLayout
+                        android:id="@+id/videoView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                </FrameLayout>
+
+            </RelativeLayout>
+
+        </androidx.cardview.widget.CardView>
+    </ScrollView>
+
+
+</RelativeLayout>

@@ -114,6 +114,7 @@ public class SaveDefaultValueForAll {
                         userAdminMail = userProfile.getUserAdminMail();
                         userSelfDeviceTokenId = userProfile.getDeviceToken();
                         userProfilePicUrl=userProfile.getProfilePic();
+                        userUid=userProfile.getUid();
 
                         SharedPrefManager.getInstance(context).saveUserGeoZone(userGeoZone);
                         SharedPrefManager.getInstance(context).saveUserRole(userRole);
@@ -121,6 +122,7 @@ public class SaveDefaultValueForAll {
                         SharedPrefManager.getInstance(context).saveUserProfilePic(userProfilePicUrl);
                         SharedPrefManager.getInstance(context).saveUserEmail(email);
                         SharedPrefManager.getInstance(context).saveUserPassword(password);
+                        SharedPrefManager.getInstance(context).saveUserUid(userUid);
 
                         offlineRef.document(mAuth.getCurrentUser().getUid()).delete();
                         onlineRef.document(mAuth.getCurrentUser().getUid())

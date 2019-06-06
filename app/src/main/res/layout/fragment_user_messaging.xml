@@ -43,18 +43,18 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/text3"
-                    app:counterMaxLength="20"
+                    app:counterMaxLength="100"
                     app:counterEnabled="true">
 
                 <EditText
-                    android:id="@+id/otpVerify"
+                    android:id="@+id/etTextMessage"
                     style="@style/editStyle"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_150sdp"
                     android:background="@drawable/edittext_rounded"
                     android:gravity="top|left"
                     android:inputType="textMultiLine"
-                    android:maxLength="20"
+                    android:maxLength="100"
                     android:padding="@dimen/_10sdp"
                     android:textSize="@dimen/_12sdp" />
 

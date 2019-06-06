@@ -26,7 +26,6 @@ import com.example.secureEye.Model.UserProfile;
 import com.example.secureEye.R;
 import com.example.secureEye.Utils.Constant_URLS;
 import com.example.secureEye.Utils.TypefaceSpan;
-import com.github.florent37.singledateandtimepicker.dialog.SingleDateAndTimePickerDialog;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;

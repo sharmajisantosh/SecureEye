@@ -31,8 +31,9 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0-beta01'
     implementation 'com.google.firebase:firebase-auth:17.0.0'
     implementation 'com.google.firebase:firebase-core:16.0.7'
-    implementation 'com.firebaseui:firebase-ui-auth:4.3.2'
-    implementation 'com.firebaseui:firebase-ui-database:4.3.2'
+    implementation 'com.firebaseui:firebase-ui-auth:5.0.0'
+    implementation 'com.firebaseui:firebase-ui-database:5.0.0'
+    implementation 'com.firebaseui:firebase-ui-firestore:5.0.0'
     implementation 'com.google.firebase:firebase-messaging:17.6.0'
     implementation 'com.google.firebase:firebase-database:16.0.1'
     implementation 'com.google.firebase:firebase-firestore:18.2.0'
@@ -54,10 +55,12 @@ dependencies {
     implementation 'de.hdodenhof:circleimageview:3.0.0'
     implementation 'com.github.someshkumar049:permissionmadeeasy:1.1.1'
     implementation "android.arch.lifecycle:extensions:1.1.1"
-    implementation 'com.github.florent37:singledateandtimepicker:2.1.2'
     api 'com.theartofdev.edmodo:android-image-cropper:2.8.+'
     implementation 'com.github.jrvansuita:PickImage:2.2.4'
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'com.github.Kunzisoft:Android-SwitchDateTimePicker:2.0'
+    implementation 'com.github.JakeWharton:ViewPagerIndicator:2.4.1'
+    implementation 'com.github.stfalcon:stfalcon-imageviewer:0.1.0'
+    implementation 'com.github.rtoshiro.fullscreenvideoview:fullscreenvideoview:1.1.2'
 }
 com.google.gms.googleservices.GoogleServicesPlugin.config.disableVersionCheck = true

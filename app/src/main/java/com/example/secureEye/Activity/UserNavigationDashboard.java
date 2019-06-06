@@ -192,27 +192,29 @@ public class UserNavigationDashboard extends AppCompatActivity implements Naviga
         adminProfileRef.document(userAdminId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                UserProfile user = documentSnapshot.toObject(UserProfile.class);
-                Log.d(TAG, "" + user.getName());
-                userAdminDeviceToken = user.getDeviceToken();
+                if (documentSnapshot.exists()) {
+                    UserProfile user = documentSnapshot.toObject(UserProfile.class);
+                    Log.d(TAG, "" + user.getName());
+                    userAdminDeviceToken = user.getDeviceToken();
 
-                Map<String, Object> notificationMessage = new HashMap<>();
-                notificationMessage.put("message", msg);
-                notificationMessage.put("from_id", mAuth.getCurrentUser().getUid());
-                notificationMessage.put("from_name", mAuth.getCurrentUser().getDisplayName());
-                notificationMessage.put("to_admin", userAdminDeviceToken);
-                notificationMessage.put("admin_mail", userAdminMail);
-                notificationMessage.put("timeStamp", LocationHelper.getGMTTime());
+                    Map<String, Object> notificationMessage = new HashMap<>();
+                    notificationMessage.put("message", msg);
+                    notificationMessage.put("from_id", mAuth.getCurrentUser().getUid());
+                    notificationMessage.put("from_name", mAuth.getCurrentUser().getDisplayName());
+                    notificationMessage.put("to_admin", userAdminDeviceToken);
+                    notificationMessage.put("admin_mail", userAdminMail);
+                    notificationMessage.put("timeStamp", LocationHelper.getGMTTime());
 
-                Log.d(TAG, "saveNotificationToServer: " + userAdminDeviceToken);
+                    Log.d(TAG, "saveNotificationToServer: " + userAdminDeviceToken);
 
-                notificationRef.document("GPS_Notification").collection(LocationHelper.getDate())
-                        .document(String.valueOf(System.currentTimeMillis())).set(notificationMessage).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        //Toast.makeText(getApplicationContext(), "Notification sent", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                    notificationRef.document("GPS_Notification").collection(LocationHelper.getDate())
+                            .document(String.valueOf(System.currentTimeMillis())).set(notificationMessage).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            //Toast.makeText(getApplicationContext(), "Notification sent", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
             }
         });
 

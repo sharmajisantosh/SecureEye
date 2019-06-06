@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/relatLayout239"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card_view"
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_50sdp"
+        card_view:cardBackgroundColor="@color/colorPrimary"
+        card_view:cardCornerRadius="@dimen/_10sdp"
+        card_view:cardElevation="@dimen/_3sdp"
+        android:layout_margin="@dimen/_4sdp">
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tvMessageUserName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="User Name"
+            style="@style/textViewStyle"
+            android:layout_marginLeft="@dimen/_15sdp"
+            android:layout_marginTop="@dimen/_3sdp"
+            android:textSize="@dimen/_15sdp"/>
+
+        <TextView
+            android:id="@+id/tvMessageUserMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Any message hint is equal to this and ..."
+            style="@style/textViewStyle"
+            android:layout_below="@+id/tvMessageUserName"
+            android:layout_marginLeft="@dimen/_15sdp"
+            android:layout_marginTop="@dimen/_1sdp"
+            android:textSize="@dimen/_10sdp"/>
+        </RelativeLayout>
+
+    </androidx.cardview.widget.CardView>
+</RelativeLayout>

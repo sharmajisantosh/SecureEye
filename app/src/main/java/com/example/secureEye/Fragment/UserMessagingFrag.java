@@ -2,11 +2,11 @@ package com.example.secureEye.Fragment;
 
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.media.MediaRecorder;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
@@ -17,39 +17,48 @@ import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.text.SpannableString;
 import android.text.Spanned;
-import android.text.style.RelativeSizeSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.VideoView;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.secureEye.Adapter.ChoosenImageAdapter;
+import com.example.secureEye.Model.UserMessage;
+import com.example.secureEye.Model.UserProfile;
 import com.example.secureEye.R;
+import com.example.secureEye.Services.LocationHelper;
 import com.example.secureEye.Utils.Constant_URLS;
 import com.example.secureEye.Utils.SessionManager;
+import com.example.secureEye.Utils.SharedPrefManager;
 import com.example.secureEye.Utils.TypefaceSpan;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.theartofdev.edmodo.cropper.CropImage;
-import com.theartofdev.edmodo.cropper.CropImageView;
 import com.vansuita.pickimage.bundle.PickSetup;
 import com.vansuita.pickimage.dialog.PickImageDialog;
 import com.vansuita.pickimage.listeners.IPickClick;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -59,14 +68,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
-import static android.Manifest.permission.RECORD_AUDIO;
-import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.app.Activity.RESULT_OK;
-import static android.content.Context.RECEIVER_VISIBLE_TO_INSTANT_APPS;
-import static com.firebase.ui.auth.AuthUI.getApplicationContext;
 
 public class UserMessagingFrag extends Fragment implements View.OnClickListener, View.OnTouchListener {
 
@@ -75,20 +79,27 @@ public class UserMessagingFrag extends Fragment implements View.OnClickListener,
     private static final int RESULT_LOAD_IMAGE = 1;
     private static final int RESULT_CAPTURE_IMAGE = 2;
     private static final int RESULT_CAPTURE_VIDEO = 3;
-    private static final String IMAGE_DIRECTORY = "/SecureEye/Image/";
-    private static final String AUDIO_RECORDER_FOLDER = "/SecureEye/Audio/";
-    private static final String VIDEO_RECORDER_FOLDER = "/SecureEye/Video/";
+    private static final String IMAGE_DIRECTORY = "/SecureEye/Image";
+    private static final String AUDIO_RECORDER_FOLDER = "/SecureEye/Audio";
+    private static final String VIDEO_RECORDER_FOLDER = "/SecureEye/Video";
     private Button btnChooseImage, btnUploadNote, btnRecordAudio, btnRecordVideo;
+    private CollectionReference adminProfileRef, userProfileRef;
     private ProgressBar audioProgressBar;
     private RecyclerView recycleImageList;
+    private FirebaseAuth mAuth;
+    private EditText etTextMessage;
     private TextView tvAudioFileName, tvVideoFileName;
     private List<String> fileNameList;
     private List<Uri> fileUriList;
+    private List<String> storageImageUrlList;
+    private String storageAudioUrl, storageVideoUrl, textMessage, userAdminDeviceToken;
     private ChoosenImageAdapter choosenImageAdapter;
     private PickImageDialog dialog;
     private MediaRecorder recorder = null;
     private String audioFullFileName, audioFileName, videoFullFileName, videoFileName;
-    private int counter=0;
+    private int counter = 0, count = 0;
+    private ProgressDialog progressDialog1;
+    private Runnable r;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -99,6 +110,7 @@ public class UserMessagingFrag extends Fragment implements View.OnClickListener,
         str.setSpan(new TypefaceSpan(getActivity(), TypefaceSpan.fontName), 0, str.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         getActivity().setTitle(str);
 
+        mAuth = FirebaseAuth.getInstance();
         btnChooseImage = view.findViewById(R.id.btnChooseImage);
         btnUploadNote = view.findViewById(R.id.btnUploadNote);
         btnRecordAudio = view.findViewById(R.id.btnRecordAudio);
@@ -107,6 +119,10 @@ public class UserMessagingFrag extends Fragment implements View.OnClickListener,
         tvAudioFileName = view.findViewById(R.id.tvAudioFileName);
         tvVideoFileName = view.findViewById(R.id.tvVideoFileName);
         audioProgressBar = view.findViewById(R.id.audioProgressBar);
+        etTextMessage = view.findViewById(R.id.etTextMessage);
+
+        userProfileRef = Constant_URLS.USER_PROFILE_REF;
+        adminProfileRef = Constant_URLS.ADMIN_PROFILE_REF;
 
       /*  SpannableString btnText = new SpannableString("(PRESS AND HOLD)");
         btnText.setSpan(new TypefaceSpan(getActivity(), TypefaceSpan.fontName), 0, str.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -115,6 +131,7 @@ public class UserMessagingFrag extends Fragment implements View.OnClickListener,
 
         fileNameList = new ArrayList<>();
         fileUriList = new ArrayList<>();
+        storageImageUrlList = new ArrayList<>();
         choosenImageAdapter = new ChoosenImageAdapter(fileNameList);
         audioProgressBar.setVisibility(View.GONE);
 
@@ -174,14 +191,21 @@ public class UserMessagingFrag extends Fragment implements View.OnClickListener,
     }
 
     private void UploadNote() {
-        int count=fileNameList.size();
 
+        count = fileNameList.size() + count;
+        progressDialog1 = new ProgressDialog(getActivity());
+        progressDialog1.setCancelable(false);
+        progressDialog1.setMessage("Uploading.... " + counter + "/" + count);
+        progressDialog1.show();
+
+        textMessage = etTextMessage.getText().toString().trim();
         StorageReference imgStorageRef = Constant_URLS.IMAGE_STORAGE_REF;
 
         if (fileUriList.size() > 0) {
+            storageImageUrlList.clear();
             for (int i = 0; i < fileUriList.size(); i++) {
 
-                StorageReference imageRef = imgStorageRef.child( fileNameList.get(i));
+                StorageReference imageRef = imgStorageRef.child(mAuth.getUid()).child(System.currentTimeMillis()+".jpg");
                 imageRef.putFile(fileUriList.get(i)).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -189,6 +213,7 @@ public class UserMessagingFrag extends Fragment implements View.OnClickListener,
                             @Override
                             public void onSuccess(Uri uri) {
                                 //Toast.makeText(getActivity(), "uploaded", Toast.LENGTH_SHORT).show();
+                                storageImageUrlList.add(uri.toString());
                                 Log.d(TAG, "onSuccess: image url is " + uri.toString());
                                 counter++;
                             }
@@ -197,9 +222,10 @@ public class UserMessagingFrag extends Fragment implements View.OnClickListener,
                 });
 
             }
-            if (audioFullFileName!=null) {
-                StorageReference audioStorageRef= Constant_URLS.AUDIO_STORAGE_REF;
-                StorageReference audioRef = audioStorageRef.child(audioFileName);
+        }
+            if (audioFullFileName != null) {
+                StorageReference audioStorageRef = Constant_URLS.AUDIO_STORAGE_REF;
+                StorageReference audioRef = audioStorageRef.child(mAuth.getUid()).child(audioFileName);
                 Uri uriAudio = Uri.fromFile(new File(audioFullFileName));
                 audioRef.putFile(uriAudio).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
@@ -207,6 +233,7 @@ public class UserMessagingFrag extends Fragment implements View.OnClickListener,
                         audioRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                             @Override
                             public void onSuccess(Uri uri) {
+                                storageAudioUrl = uri.toString();
                                 Log.d(TAG, "onSuccess: audio url is " + uri.toString());
                                 counter++;
                             }
@@ -215,9 +242,9 @@ public class UserMessagingFrag extends Fragment implements View.OnClickListener,
                 });
             }
 
-            if (videoFullFileName!=null) {
-                StorageReference videoStorageRef= Constant_URLS.VIDEO_STORAGE_REF;
-                StorageReference videoRef = videoStorageRef.child("Video/" + audioFileName);
+            if (videoFullFileName != null) {
+                StorageReference videoStorageRef = Constant_URLS.VIDEO_STORAGE_REF;
+                StorageReference videoRef = videoStorageRef.child(mAuth.getUid()).child(audioFileName);
                 Uri uriVideo = Uri.fromFile(new File(videoFullFileName));
                 videoRef.putFile(uriVideo).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
@@ -225,6 +252,7 @@ public class UserMessagingFrag extends Fragment implements View.OnClickListener,
                         videoRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                             @Override
                             public void onSuccess(Uri uri) {
+                                storageVideoUrl = uri.toString();
                                 Log.d(TAG, "onSuccess: video url is " + uri.toString());
                                 counter++;
                             }
@@ -233,25 +261,85 @@ public class UserMessagingFrag extends Fragment implements View.OnClickListener,
                 });
             }
 
-            Handler handler=new Handler();
-            Runnable r= new Runnable() {
+            Handler handler = new Handler();
+            r = new Runnable() {
                 @Override
                 public void run() {
-                    handler.postDelayed(this,1000);
-              if (counter==count){
-                  Toast.makeText(getActivity(), "Uploaded", Toast.LENGTH_SHORT).show();
-                  handler.removeCallbacks(this);
-              }else {
-                  Toast.makeText(getActivity(), "Uploading "+counter+"/"+count, Toast.LENGTH_SHORT).show();
-              }
+                    handler.postDelayed(this, 1000);
+                    if (counter == count) {
+                        JSONObject imgUrlJson=null;
+                        progressDialog1.setMessage("Uploading.... " + counter + "/" + count);
+                        if (storageImageUrlList.size()>0) {
+                            imgUrlJson = new JSONObject();
+                            for (int i = 0; i < storageImageUrlList.size(); i++) {
+                                try {
+                                    imgUrlJson.put("imgUrl" + i, storageImageUrlList.get(i));
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+
+                        String userAdminId=SharedPrefManager.getInstance(getActivity()).getUserAdminId();
+                        Log.d(TAG, "admin id "+userAdminId);
+                        JSONObject finalImgUrlJson = imgUrlJson;
+                        adminProfileRef.document(userAdminId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                if (task.isComplete()) {
+                                    DocumentSnapshot user = task.getResult();
+                                    user.toObject(UserProfile.class);
+                                    userAdminDeviceToken = user.get("deviceToken").toString();
+                                    String userAdminMail = SharedPrefManager.getInstance(getActivity()).getUserAdminMail();
+                                    Log.d(TAG, "onSuccess:abcde "+userAdminDeviceToken);
+                                    UserMessage userMessage = new UserMessage();
+                                    userMessage.setAdminMail(userAdminMail);
+                                    userMessage.setToAdminDevice(userAdminDeviceToken);
+                                    userMessage.setFromId(mAuth.getUid());
+                                    userMessage.setFromName(mAuth.getCurrentUser().getDisplayName());
+                                    userMessage.setMessage(textMessage);
+                                    if (finalImgUrlJson!=null) {
+                                        userMessage.setImgUrl(finalImgUrlJson.toString());
+                                    }else {
+                                        userMessage.setImgUrl("");
+                                    }
+                                    userMessage.setAudUrl(storageAudioUrl);
+                                    userMessage.setVidUrl(storageVideoUrl);
+                                    userMessage.setTimeStamp(LocationHelper.getGMTTime());
+                                    userMessage.setIsRead(false);
+
+                                    Log.d(TAG, "inside admin profile");
+                                    handler.removeCallbacks(r);
+                                    progressDialog1.dismiss();
+
+                                    String userAdminId = SharedPrefManager.getInstance(getActivity()).getUserAdminId();
+                                    adminProfileRef.document(userAdminId).collection("usersMessage").document(String.valueOf(System.currentTimeMillis()))
+                                            .set(userMessage).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Log.d(TAG, "onSuccess:all uploaded ");
+
+                                            Toast.makeText(getActivity(), "Uploaded", Toast.LENGTH_SHORT).show();
+                                            UserNavDashboard navFrag1 = new UserNavDashboard();
+                                            FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+                                            ft.replace(R.id.NavFrameLayout1, navFrag1);
+                                            ft.commit();
+                                            handler.removeCallbacks(r);
+                                            progressDialog1.dismiss();
+                                        }
+                                    });
+                                }
+                            }
+                        });
+
+                    } else {
+                        progressDialog1.setMessage("Uploading.... " + counter + "/" + count);
+                    }
                 }
             };
 
-            handler.postDelayed(r,1000);
+            handler.postDelayed(r, 1000);
 
-        } else {
-            Toast.makeText(getActivity(), "Please select image", Toast.LENGTH_SHORT).show();
-        }
     }
 
     @Override
@@ -408,6 +496,7 @@ public class UserMessagingFrag extends Fragment implements View.OnClickListener,
             recorder = null;
             Toast.makeText(getActivity(), "Recording stop", Toast.LENGTH_SHORT).show();
             tvAudioFileName.setText(audioFileName);
+            count++;
         }
     }
 
@@ -454,9 +543,9 @@ public class UserMessagingFrag extends Fragment implements View.OnClickListener,
             if (!wallpaperDirectory.exists()) {
                 wallpaperDirectory.mkdirs();
             }
-
+            count++;
             tvVideoFileName.setText(videoFileName);
-            videoFullFileName=Environment.getExternalStorageDirectory() + VIDEO_RECORDER_FOLDER + videoFileName;
+            videoFullFileName = Environment.getExternalStorageDirectory() + VIDEO_RECORDER_FOLDER + videoFileName;
 
             if (currentFile.exists()) {
 
@@ -472,9 +561,9 @@ public class UserMessagingFrag extends Fragment implements View.OnClickListener,
                 }
                 in.close();
                 out.close();
-                Log.d("vii", "Video file saved successfully.");
+                Log.d(TAG, "Video file saved successfully.");
             } else {
-                Log.d("vii", "Video saving failed. Source file missing.");
+                Log.d(TAG, "Video saving failed. Source file missing.");
             }
         } catch (Exception e) {
             e.printStackTrace();
