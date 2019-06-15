@@ -25,6 +25,7 @@ import android.util.Log;
 import com.example.secureEye.R;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
@@ -85,5 +86,12 @@ public class LocationHelper {
         String newDate=sdf.format(date);
         //Log.d(TAG, "getGMTTime: "+newDate);
         return newDate;
+    }
+
+    public static String getTimeStampDateFormat(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss z");
+        sdf.setTimeZone(TimeZone.getDefault());
+        String strDate=sdf.format(date);
+        return strDate;
     }
 }

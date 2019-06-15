@@ -108,8 +108,6 @@ public class AdminViewMessagesList extends Fragment {
         userMessageRecycler.setLayoutAnimation(controller);
         userMessageRecycler.setAdapter(messageAdapter);
 
-
-
     }
 
     @Override

@@ -47,6 +47,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -152,18 +153,12 @@ public class UpdateUser extends Fragment {
                 newUserName = etNewUserName.getText().toString();
                 newPhoneNumber = countryCode.getFullNumberWithPlus();
 
-                if (!oldPhoneNumber.equalsIgnoreCase(newPhoneNumber)) {
+                if ((!oldPhoneNumber.equalsIgnoreCase(newPhoneNumber)||(!oldUserName.equalsIgnoreCase(newUserName)))) {
                     Log.d(TAG, "inside old number: old= " + oldPhoneNumber + "   new= " + newPhoneNumber);
                     count++;
                     updatePhoneAndEmail(newPhoneNumber);
 
                 }
-                if (!oldUserName.equalsIgnoreCase(newUserName)) {
-                    Log.d(TAG, "inside else old name: old= " + oldUserName + "   new= " + newUserName);
-                    count++;
-                    updatedNameOnServer();
-                }
-
                 if (!oldUserAdminMail.equalsIgnoreCase(newUserAdminMailId)) {
                     Log.d(TAG, "inside old admin mail: old= " + oldUserAdminMail + "   new= " + newUserAdminMailId);
                     count++;
@@ -210,21 +205,6 @@ public class UpdateUser extends Fragment {
                 Toast.makeText(getActivity(), "Fill all fields", Toast.LENGTH_SHORT).show();
             }
         }
-    }
-
-    private void updatedNameOnServer() {
-        userProfileRef.document(userUid).update("name", newUserName).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Log.d(TAG, "updated userProfileRef");
-                userAdminLinkRef.document(newUserGeozone).collection(newUserAdminUid).document(userUid).update("userName",newUserName).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        counter++;
-                    }
-                });
-            }
-        });
     }
 
     private void updateProfilePic() {
@@ -287,50 +267,61 @@ public class UpdateUser extends Fragment {
             @Override
             public void onSuccess(AuthResult authResult) {
                 FirebaseUser user1 = mAuth.getCurrentUser();
-                String userEmail=newPhoneNumber + "@skyspirit.com";
-                user1.updateEmail(userEmail).addOnCompleteListener(new OnCompleteListener<Void>() {
+                String userEmail = newPhoneNumber + "@skyspirit.com";
+                UserProfileChangeRequest chngName = new UserProfileChangeRequest.Builder()
+                        .setDisplayName(newUserName).build();
+                user1.updateProfile(chngName).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            mAuth.signOut();
-                            String email = SharedPrefManager.getInstance(getActivity()).getUserEmail();
-                            String password = SharedPrefManager.getInstance(getActivity()).getUserPassword();
-                            mAuth.signInWithEmailAndPassword(email, password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                            user1.updateEmail(userEmail).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
-                                public void onSuccess(AuthResult authResult) {
-                                    HashMap<String, Object> updatedData = new HashMap<>();
-                                    updatedData.put("email", userEmail);
-                                    updatedData.put("fullPhoneNumber", newPhoneNumber);
-                                    userProfileRef.document(userUid).update(updatedData).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-                                            counter++;
-                                        }
-                                    });
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        mAuth.signOut();
+                                        String email = SharedPrefManager.getInstance(getActivity()).getUserEmail();
+                                        String password = SharedPrefManager.getInstance(getActivity()).getUserPassword();
+                                        mAuth.signInWithEmailAndPassword(email, password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                                            @Override
+                                            public void onSuccess(AuthResult authResult) {
+                                                HashMap<String, Object> updatedData = new HashMap<>();
+                                                updatedData.put("email", userEmail);
+                                                updatedData.put("fullPhoneNumber", newPhoneNumber);
+                                                updatedData.put("name", newUserName);
+                                                userProfileRef.document(userUid).update(updatedData).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void aVoid) {
+                                                        counter++;
+                                                    }
+                                                });
+                                            }
+                                        }).addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                Toast.makeText(getActivity(), "Some error occured", Toast.LENGTH_SHORT).show();
+                                                progressDialog1.dismiss();
+                                                handler.removeCallbacks(r);
+                                                adminLoginAgain();
+                                            }
+                                        });
+                                    } else {
+                                        Toast.makeText(getActivity(), "Phone Number already exists", Toast.LENGTH_SHORT).show();
+                                        progressDialog1.dismiss();
+                                        handler.removeCallbacks(r);
+                                        adminLoginAgain();
+                                    }
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
-                                    Toast.makeText(getActivity(), "Some error occured", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getActivity(), "Phone Number already exist.", Toast.LENGTH_SHORT).show();
                                     progressDialog1.dismiss();
                                     handler.removeCallbacks(r);
                                     adminLoginAgain();
                                 }
+
                             });
-                        }else {
-                            Toast.makeText(getActivity(), "Phone Number already exists", Toast.LENGTH_SHORT).show();
-                            progressDialog1.dismiss();
-                            handler.removeCallbacks(r);
-                            adminLoginAgain();
                         }
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getActivity(), "Phone Number already exist.", Toast.LENGTH_SHORT).show();
-                        progressDialog1.dismiss();
-                        handler.removeCallbacks(r);
-                        adminLoginAgain();
                     }
                 });
             }
@@ -353,8 +344,6 @@ public class UpdateUser extends Fragment {
             }
         });
     }
-
-
 
 
     private void setupUserNameListSpinner(String adminGeoZone) {

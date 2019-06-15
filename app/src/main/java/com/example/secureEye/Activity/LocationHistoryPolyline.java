@@ -54,6 +54,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static com.example.secureEye.Services.LocationHelper.getTimeStampDateFormat;
+
 public class LocationHistoryPolyline extends AppCompatActivity implements OnMapReadyCallback, View.OnClickListener {
 
     private static final String TAG = "LocationHistoryPolyline";
@@ -308,8 +310,11 @@ public class LocationHistoryPolyline extends AppCompatActivity implements OnMapR
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         Log.d(TAG, "showOnMap: " + selectedUserId);
         String searchDate = dateFormat.format(selectedStartDate);
+
+
         locationHistRef.document(selectedUserId).collection(searchDate)
-                .whereGreaterThan("timeStamp", selectedStartDate).whereLessThan("timeStamp", selectedEndDate).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                .whereGreaterThan("timeStamp", getTimeStampDateFormat(selectedStartDate))
+                .whereLessThan("timeStamp", getTimeStampDateFormat(selectedEndDate)).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 if (!queryDocumentSnapshots.isEmpty()) {
