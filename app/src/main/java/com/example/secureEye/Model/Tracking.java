@@ -10,14 +10,13 @@ public class Tracking {
     private String lat;
     private String lon;
     private String dispName;
-    @ServerTimestamp
-    private Date timeStamp;
+    private String timeStamp;
 
     public Tracking(){
 
     }
 
-    public Tracking( String uid, String lat, String lon, String dispName, Date timeStamp) {
+    public Tracking( String uid, String lat, String lon, String dispName, String timeStamp) {
         this.uid = uid;
         this.lat = lat;
         this.lon = lon;
@@ -56,11 +55,11 @@ public class Tracking {
         return dispName;
     }
 
-    public Date getTimeStamp() {
+    public String getTimeStamp() {
         return timeStamp;
     }
 
-    public void setTimeStamp(Date timeStamp) {
+    public void setTimeStamp(String timeStamp) {
         this.timeStamp = timeStamp;
     }
 }

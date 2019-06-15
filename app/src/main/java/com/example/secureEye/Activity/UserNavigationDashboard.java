@@ -120,6 +120,8 @@ public class UserNavigationDashboard extends AppCompatActivity implements Naviga
         tv.setText(mAuth.getCurrentUser().getDisplayName());
         TextView tv1 = headerView.findViewById(R.id.phoneText1);
         tv1.setText(mAuth.getCurrentUser().getEmail());
+        TextView tv2 = headerView.findViewById(R.id.userRoleText);
+        tv2.setText("(User)");
         CircleImageView profilePic = headerView.findViewById(R.id.navImage1);
         String photoUrl = SharedPrefManager.getInstance(this).getUserProfilePic();
         Picasso.get().load(photoUrl).into(profilePic);

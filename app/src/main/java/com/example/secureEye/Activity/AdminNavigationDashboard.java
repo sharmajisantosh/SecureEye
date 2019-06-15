@@ -84,6 +84,8 @@ public class AdminNavigationDashboard extends AppCompatActivity implements Navig
         tv.setText(mAuth.getCurrentUser().getDisplayName());
         TextView tv1 = headerView.findViewById(R.id.phoneText);
         tv1.setText(mAuth.getCurrentUser().getEmail());
+        TextView tv2 = headerView.findViewById(R.id.adminRoleText);
+        tv2.setText("(Admin)");
         CircleImageView profilePic = headerView.findViewById(R.id.navImage);
         String photoUrl = SharedPrefManager.getInstance(this).getUserProfilePic();
         Picasso.get().load(photoUrl).into(profilePic);

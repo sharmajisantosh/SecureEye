@@ -291,7 +291,12 @@ public class UpdateUser extends Fragment {
                                                 userProfileRef.document(userUid).update(updatedData).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                     @Override
                                                     public void onSuccess(Void aVoid) {
-                                                        counter++;
+                                                        userAdminLinkRef.document(oldGeoZone).collection(oldUserAdminUid).document(userUid).update("userName", newUserName).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                            @Override
+                                                            public void onSuccess(Void aVoid) {
+                                                                counter++;
+                                                            }
+                                                        });
                                                     }
                                                 });
                                             }
