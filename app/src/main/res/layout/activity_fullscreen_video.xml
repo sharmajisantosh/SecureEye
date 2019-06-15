@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Activity.FullscreenVideo">
+
+
+    <VideoView
+        android:id="@+id/VideoViewfull"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+    </VideoView>
+    <Button
+        android:id="@+id/btnNormalScreenVideo"
+        android:layout_width="@dimen/_40sdp"
+        android:layout_height="@dimen/_40sdp"
+        android:background="@drawable/ic_fullscreen_exit"
+        android:layout_alignParentRight="true"
+    android:layout_alignParentBottom="true" />
+
+</RelativeLayout>
