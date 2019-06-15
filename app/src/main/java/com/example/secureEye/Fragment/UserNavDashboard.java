@@ -81,6 +81,11 @@ public class UserNavDashboard extends Fragment implements View.OnClickListener {
                 break;
 
             case R.id.btnUserDutySchedular:
+                UserSeeDutyTiming navFrag2 = new UserSeeDutyTiming();
+                FragmentTransaction ft1 = getActivity().getSupportFragmentManager().beginTransaction();
+                ft1.addToBackStack(TAG);
+                ft1.replace(R.id.NavFrameLayout1, navFrag2);
+                ft1.commit();
                 break;
 
             case R.id.btnUserIncidentReport:

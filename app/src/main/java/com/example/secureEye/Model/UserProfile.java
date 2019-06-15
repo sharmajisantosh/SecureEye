@@ -1,6 +1,8 @@
 package com.example.secureEye.Model;
 
-public class UserProfile {
+import java.io.Serializable;
+
+public class UserProfile implements Serializable {
     private String name;
     private String fullPhoneNumber;
     private String email;

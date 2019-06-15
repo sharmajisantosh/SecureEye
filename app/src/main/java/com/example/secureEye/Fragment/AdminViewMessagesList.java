@@ -1,8 +1,10 @@
 package com.example.secureEye.Fragment;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -12,11 +14,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.SpannableString;
 import android.text.Spanned;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 
+import com.example.secureEye.Activity.AdminViewMessage;
 import com.example.secureEye.Adapter.UsersMessageAdapter;
 import com.example.secureEye.Interface.RecyclerItemClickListner;
 import com.example.secureEye.Model.UserMessage;
@@ -24,8 +29,11 @@ import com.example.secureEye.R;
 import com.example.secureEye.Utils.Constant_URLS;
 import com.example.secureEye.Utils.TypefaceSpan;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
@@ -75,22 +83,29 @@ public class AdminViewMessagesList extends Fragment {
             @Override
             public void onItemClickListner(int position) {
                 UserMessage userMessage=messageAdapter.getItem(position);
-                Bundle bundle=new Bundle();
-                bundle.putSerializable("userMessage", userMessage);
 
-                AdminViewMessage navFrag1 = new AdminViewMessage();
-                navFrag1.setArguments(bundle);
-                FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-                ft.addToBackStack("AdminViewMessage");
-                ft.replace(R.id.NavFrameLayout, navFrag1);
-                ft.commit();
+                Intent intent=new Intent(getActivity(), AdminViewMessage.class);
+                intent.putExtra("userMessage", userMessage);
+                startActivity(intent);
 
+                if (!userMessage.isRead()) {
+                    DocumentSnapshot snapshot = options.getSnapshots().getSnapshot(position);
+                    adminProfileRef.document(mAuth.getUid()).collection("usersMessage").document(snapshot.getId())
+                            .update("read", true).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+
+                        }
+                    });
+                }
             }
         });
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         userMessageRecycler.setLayoutManager(mLayoutManager);
         userMessageRecycler.setItemAnimator(new DefaultItemAnimator());
         userMessageRecycler.addItemDecoration(new DividerItemDecoration(getActivity(), 0));
+        final LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_animation_right_to_left);
+        userMessageRecycler.setLayoutAnimation(controller);
         userMessageRecycler.setAdapter(messageAdapter);
 
 

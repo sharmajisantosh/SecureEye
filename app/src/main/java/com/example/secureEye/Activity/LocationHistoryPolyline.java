@@ -70,7 +70,6 @@ public class LocationHistoryPolyline extends AppCompatActivity implements OnMapR
     private List<String> geofenceList, userIdList;
     private SimpleDateFormat simpleDateFormat;
     private List<LatLng> locationPoints;
-    private SimpleDateFormat sdf;
     private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private List<UserProfile> userList;
     private CollectionReference locationHistRef, userProfileRef, onlineRef, offlineRef, geofenceRef;
@@ -110,7 +109,6 @@ public class LocationHistoryPolyline extends AppCompatActivity implements OnMapR
         userList = new ArrayList<>();
         locationPoints = new ArrayList<>();
         simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        sdf = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss z");
 
         btnShowHistory.setOnClickListener(this);
         selectedStartTime.setOnClickListener(this);
@@ -293,7 +291,7 @@ public class LocationHistoryPolyline extends AppCompatActivity implements OnMapR
         dateTimeDialogFragment.setOnButtonClickListener(new SwitchDateTimeDialogFragment.OnButtonClickListener() {
             @Override
             public void onPositiveButtonClick(Date date) {
-                selectedStartDate = date;
+                selectedEndDate = date;
                 selectedEndTime.setText(simpleDateFormat.format(date));
 
             }

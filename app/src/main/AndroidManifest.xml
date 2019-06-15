@@ -31,17 +31,23 @@
         android:roundIcon="@drawable/app_logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activity.LocationHistoryPolyline"
-            android:screenOrientation="portrait"/>
+        <activity android:name=".Activity.FullscreenVideo"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        <activity
+            android:name=".Activity.LocationHistoryPolyline"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".Activity.UserNavigationDashboard"
             android:label="@string/title_activity_user_navigation_drawer"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".Activity.Show_Geofence"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".Activity.Add_New_Geofence"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".Activity.Show_Geofence"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Activity.Add_New_Geofence"
+            android:screenOrientation="portrait" />
 
         <uses-library
             android:name="org.apache.http.legacy"
@@ -57,13 +63,17 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/app_logo" />
 
         <activity
             android:name=".Activity.MapsTracking"
             android:label="@string/title_activity_maps_tracking"
             android:screenOrientation="portrait" />
-        <activity android:name=".Activity.ListOnline"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".Activity.AdminViewMessage"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".Activity.AdminNavigationDashboard"
             android:label="@string/title_activity_navigation_dashboard"
@@ -104,7 +114,7 @@
         </service>
         <service
             android:name=".Services.DeviceStatusService"
-            android:exported="false"></service>
+            android:exported="false" />
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"

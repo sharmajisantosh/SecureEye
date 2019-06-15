@@ -69,8 +69,11 @@ public class AdminNavDashboard extends Fragment implements View.OnClickListener 
                 break;
 
             case R.id.btnDutySchedular:
-
-                break;
+                AdminUserDutyList adminUserDutyList = new AdminUserDutyList();
+                FragmentTransaction ft3 = getActivity().getSupportFragmentManager().beginTransaction();
+                ft3.addToBackStack("adminUserDutyList");
+                ft3.replace(R.id.NavFrameLayout, adminUserDutyList);
+                ft3.commit();
 
             case R.id.btnIncidentReport:
                 break;

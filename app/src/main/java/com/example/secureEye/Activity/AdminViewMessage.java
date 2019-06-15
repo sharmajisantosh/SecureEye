@@ -1,33 +1,42 @@
-package com.example.secureEye.Fragment;
+package com.example.secureEye.Activity;
 
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.viewpager.widget.ViewPager;
-
 import android.os.Handler;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.MediaController;
+import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.VideoView;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
 
 import com.example.secureEye.Adapter.SlidingImageAdapter;
+import com.example.secureEye.Interface.StartMyActivity;
 import com.example.secureEye.Model.UserMessage;
 import com.example.secureEye.R;
+import com.example.secureEye.Utils.FullScreenMediaController;
 import com.example.secureEye.Utils.TypefaceSpan;
-import com.github.rtoshiro.view.video.FullscreenVideoLayout;
 import com.viewpagerindicator.CirclePageIndicator;
 
 import org.json.JSONException;
@@ -44,14 +53,17 @@ import static com.example.secureEye.Utils.SessionManager.progressToTimer;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class AdminViewMessage extends Fragment implements View.OnClickListener, SeekBar.OnSeekBarChangeListener, MediaPlayer.OnCompletionListener {
+public class AdminViewMessage extends AppCompatActivity implements View.OnClickListener, SeekBar.OnSeekBarChangeListener, MediaPlayer.OnCompletionListener {
 
     private static final String TAG = "AdminViewMessage";
+    private static final int REQUEST_CODE = 101;
+
     private List<String> imgUrlList;
     private ViewPager viewPager;
     private CirclePageIndicator pageIndicator;
     private UserMessage userMessage;
     private EditText etShowMessage;
+    private Button btnFullScreenVideo;
     private SlidingImageAdapter adapter;
     private String audioPath, videoPath;
     private SeekBar audioSeekbar;
@@ -60,31 +72,40 @@ public class AdminViewMessage extends Fragment implements View.OnClickListener, 
     private MediaPlayer audioPlayer;
     private final Handler mHandler = new Handler();
     private ProgressDialog progressDialog;
-    private FullscreenVideoLayout videoView;
+    private VideoView videoView;
+    private VideoView fullVideoView;
+    private Dialog dialog;
+    private FullScreenMediaController mediaController;
+    private FullScreenMediaController mediaController1;
+    private int currentTime = 0;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_admin_view_message, container, false);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.fragment_admin_view_message);
 
         SpannableString str = new SpannableString("Users Message");
-        str.setSpan(new TypefaceSpan(getActivity(), TypefaceSpan.fontName), 0, str.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        getActivity().setTitle(str);
+        str.setSpan(new TypefaceSpan(this, TypefaceSpan.fontName), 0, str.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        this.setTitle(str);
 
-        viewPager = view.findViewById(R.id.messageViewPager);
-        pageIndicator = view.findViewById(R.id.indicator);
-        etShowMessage = view.findViewById(R.id.etShowMessage);
-        audioSeekbar = view.findViewById(R.id.audioSeekbar);
-        btnAudioPLay = view.findViewById(R.id.audioPlay);
-        btnAudioStop = view.findViewById(R.id.audioStop);
-        tvAudioStartTime = view.findViewById(R.id.tvAudioStartTime);
-        tvAudioTotalTime = view.findViewById(R.id.tvAudioTotalTime);
-        videoView=view.findViewById(R.id.videoView);
+        viewPager = findViewById(R.id.messageViewPager);
+        pageIndicator = findViewById(R.id.indicator);
+        etShowMessage = findViewById(R.id.etShowMessage);
+        audioSeekbar = findViewById(R.id.audioSeekbar);
+        btnAudioPLay = findViewById(R.id.audioPlay);
+        btnAudioStop = findViewById(R.id.audioStop);
+        tvAudioStartTime = findViewById(R.id.tvAudioStartTime);
+        tvAudioTotalTime = findViewById(R.id.tvAudioTotalTime);
+        btnFullScreenVideo=findViewById(R.id.btnFullScreenVideo);
+        final ProgressBar progressBar = (ProgressBar) findViewById(R.id.videoProgressBar);
+        videoView = findViewById(R.id.videoView);
         etShowMessage.setEnabled(false);
 
+        Intent intent = getIntent();
 
         imgUrlList = new ArrayList<>();
         try {
-            userMessage = (UserMessage) getArguments().getSerializable("userMessage");
+            userMessage = (UserMessage) intent.getSerializableExtra("userMessage");
             String imgUrl = userMessage.getImgUrl();
             if (imgUrl.length() > 0) {
 
@@ -93,7 +114,7 @@ public class AdminViewMessage extends Fragment implements View.OnClickListener, 
                 for (int i = 0; i < size; i++) {
                     imgUrlList.add(jsonObject.getString("imgUrl" + i));
                 }
-                adapter = new SlidingImageAdapter(getActivity(), imgUrlList);
+                adapter = new SlidingImageAdapter(this, imgUrlList);
                 viewPager.setAdapter(adapter);
                 pageIndicator.setViewPager(viewPager);
                 final float density = getResources().getDisplayMetrics().density;
@@ -113,26 +134,35 @@ public class AdminViewMessage extends Fragment implements View.OnClickListener, 
         }
 
         audioPath = userMessage.getAudUrl();
-        videoPath=userMessage.getVidUrl();
+        videoPath = userMessage.getVidUrl();
 
-        if (videoPath!=null&&videoPath.length()>0) {
-            try {
-                videoView.setVideoURI(Uri.parse(videoPath));
-                videoView.start();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }else {
-            Toast.makeText(getActivity(), "No video", Toast.LENGTH_SHORT).show();
+        if (videoPath != null && videoPath.length() > 0) {
+
+            MediaController mediaController = new MediaController(this);
+            mediaController.setAnchorView(videoView);
+            videoView.setMediaController(mediaController);
+            videoView.setVideoPath(videoPath);
+            videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    progressBar.setVisibility(View.GONE);
+                    videoView.requestFocus();
+                    videoView.start();
+
+                }
+            });
+
+        } else {
+            Toast.makeText(this, "No video", Toast.LENGTH_SHORT).show();
             videoView.setVisibility(View.INVISIBLE);
+            progressBar.setVisibility(View.INVISIBLE);
         }
 
 
         btnAudioPLay.setOnClickListener(this);
         btnAudioStop.setOnClickListener(this);
+        btnFullScreenVideo.setOnClickListener(this);
 
-
-        return view;
     }
 
     @Override
@@ -142,13 +172,43 @@ public class AdminViewMessage extends Fragment implements View.OnClickListener, 
                 if (audioPath != null && audioPath.length() > 0) {
                     playAudio();
                 } else {
-                    Toast.makeText(getActivity(), "No audio message.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "No audio message.", Toast.LENGTH_SHORT).show();
                 }
                 break;
 
             case R.id.audioStop:
                 stopAudio();
                 break;
+
+            case R.id.btnFullScreenVideo:
+                fullScreenVideo();
+                break;
+        }
+    }
+
+    private void fullScreenVideo() {
+        Intent videointent = new Intent(this, FullscreenVideo.class);
+        videointent.putExtra("currenttime", videoView.getCurrentPosition());
+        videointent.putExtra("Url", videoPath);
+        startActivityForResult(videointent, REQUEST_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK && requestCode == REQUEST_CODE) {
+            if (data.hasExtra("currenttime")) {
+                int result = data.getExtras().getInt("currenttime", 0);
+                if (result > 0) {
+                    if (null != videoView) {
+                        videoView.start();
+                        videoView.seekTo(result);
+                        ProgressBar progressBar = (ProgressBar) findViewById(R.id.videoProgressBar);
+                        progressBar.setVisibility(View.VISIBLE);
+
+                    }
+                }
+            }
         }
     }
 
@@ -158,17 +218,17 @@ public class AdminViewMessage extends Fragment implements View.OnClickListener, 
                 audioPlayer.pause();
                 mHandler.removeCallbacks(mUpdateTimeTask);
                 btnAudioPLay.setImageResource(R.drawable.play_icon);
-                getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                this.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-            }else {
+            } else {
                 audioPlayer.start();
                 btnAudioPLay.setImageResource(R.drawable.pause_icon);
-                getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
                 /* Updating progressbar while play pause clicked. */
                 updateProgressBar();
             }
-        }else {
+        } else {
 
             try {
                 audioPlayer = new MediaPlayer();
@@ -184,7 +244,7 @@ public class AdminViewMessage extends Fragment implements View.OnClickListener, 
 
                 // Changing Button Image to pause image
                 btnAudioPLay.setImageResource(R.drawable.pause_icon);
-                getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                 audioSeekbar.setOnSeekBarChangeListener(this); // Important
                 audioPlayer.setOnCompletionListener(this); // Important
 
@@ -202,10 +262,10 @@ public class AdminViewMessage extends Fragment implements View.OnClickListener, 
     }
 
     private void stopAudio() {
-        if (audioPlayer!=null) {
+        if (audioPlayer != null) {
             audioPlayer.stop();
             audioPlayer.release();
-            audioPlayer=null;
+            audioPlayer = null;
 
             tvAudioTotalTime.setText("00:00");
             // Displaying time completed playing
@@ -214,7 +274,7 @@ public class AdminViewMessage extends Fragment implements View.OnClickListener, 
             // Updating progress bar
             audioSeekbar.setProgress(0);
             btnAudioPLay.setImageResource(R.drawable.play_icon);
-            getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            this.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
     }
 
@@ -248,7 +308,7 @@ public class AdminViewMessage extends Fragment implements View.OnClickListener, 
     public void onCompletion(MediaPlayer mp) {
         audioPlayer.stop();
         audioPlayer.release();
-        audioPlayer=null;
+        audioPlayer = null;
         tvAudioTotalTime.setText("00:00");
         // Displaying time completed playing
         tvAudioStartTime.setText("00:00");
@@ -256,7 +316,7 @@ public class AdminViewMessage extends Fragment implements View.OnClickListener, 
         // Updating progress bar
         audioSeekbar.setProgress(0);
         btnAudioPLay.setImageResource(R.drawable.play_icon);
-        getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        this.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
     }
 
@@ -294,10 +354,10 @@ public class AdminViewMessage extends Fragment implements View.OnClickListener, 
     public void onPause() {
         super.onPause();
         btnAudioPLay.setImageResource(R.drawable.play_icon);
-        if(audioPlayer!=null) {
+        if (audioPlayer != null) {
             audioPlayer.pause();
             mHandler.removeCallbacks(mUpdateTimeTask);
-            getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            this.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
 
     }
@@ -312,5 +372,10 @@ public class AdminViewMessage extends Fragment implements View.OnClickListener, 
             updateProgressBar();
         }
         Log.d("in Resume", "in Resume");
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 }

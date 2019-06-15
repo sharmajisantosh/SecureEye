@@ -10,11 +10,11 @@ public class LocationHistoryModel {
     public String lat;
     public String lon;
     public String deviceId;
-    public Date timeStamp;
+    public String timeStamp;
 
     public LocationHistoryModel() {
     }
-    public LocationHistoryModel(String lat, String lon, Date timeStamp) {
+    public LocationHistoryModel(String lat, String lon, String timeStamp) {
         this.lat = lat;
         this.lon = lon;
         this.timeStamp = timeStamp;
@@ -35,11 +35,11 @@ public class LocationHistoryModel {
         this.lon = lon;
     }
 
-    public Date getTimeStamp() {
+    public String getTimeStamp() {
         return timeStamp;
     }
 
-    public void setTimeStamp(Date timeStamp) {
+    public void setTimeStamp(String timeStamp) {
         this.timeStamp = timeStamp;
     }
 

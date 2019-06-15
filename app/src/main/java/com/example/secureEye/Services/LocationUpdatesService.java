@@ -382,7 +382,7 @@ public class LocationUpdatesService extends Service {
 
         locationsRef.document(userUid).update("lat", String.valueOf(mLocation.getLatitude()),
                 "lon", String.valueOf(mLocation.getLongitude()),
-                "timeStamp", LocationHelper.getGMTTimeAsDate()).addOnSuccessListener(new OnSuccessListener<Void>() {
+                "timeStamp", LocationHelper.getGMTTime()).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
             }
@@ -395,7 +395,7 @@ public class LocationUpdatesService extends Service {
                 newLocationEntry.put("lon", String.valueOf(mLocation.getLongitude()));
                 newLocationEntry.put("dispName", mAuth.getCurrentUser().getDisplayName());
                 newLocationEntry.put("deviceId", deviceId);
-                newLocationEntry.put("timeStamp", LocationHelper.getGMTTimeAsDate());
+                newLocationEntry.put("timeStamp", LocationHelper.getGMTTime());
                 locationsRef.document(mAuth.getUid()).set(newLocationEntry).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -410,7 +410,7 @@ public class LocationUpdatesService extends Service {
         loc.setLat(String.valueOf(mLocation.getLatitude()));
         loc.setLon(String.valueOf(mLocation.getLongitude()));
         loc.setDeviceId(deviceId);
-        loc.setTimeStamp(LocationHelper.getGMTTimeAsDate());
+        loc.setTimeStamp(LocationHelper.getGMTTime());
         //loc.setTimeStamp(null);
 
         locationHistoryRef.document(userUid).collection(LocationHelper.getDate())

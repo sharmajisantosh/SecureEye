@@ -12,7 +12,7 @@ public class UserMessage implements Serializable {
     private String toAdminDevice;
     private String adminMail;
     private String timeStamp;
-    private boolean isRead;
+    private boolean read;
 
     public String getMessage() {
         return message;
@@ -87,12 +87,11 @@ public class UserMessage implements Serializable {
     }
 
     public boolean isRead() {
-        return isRead;
+        return read;
     }
 
-    public void setIsRead(boolean isRead) {
-        this.isRead = isRead;
+    public void setRead(boolean read) {
+        this.read = read;
     }
-
 
 }

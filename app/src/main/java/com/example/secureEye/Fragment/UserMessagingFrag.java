@@ -244,7 +244,7 @@ public class UserMessagingFrag extends Fragment implements View.OnClickListener,
 
             if (videoFullFileName != null) {
                 StorageReference videoStorageRef = Constant_URLS.VIDEO_STORAGE_REF;
-                StorageReference videoRef = videoStorageRef.child(mAuth.getUid()).child(audioFileName);
+                StorageReference videoRef = videoStorageRef.child(mAuth.getUid()).child(videoFileName);
                 Uri uriVideo = Uri.fromFile(new File(videoFullFileName));
                 videoRef.putFile(uriVideo).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
@@ -306,7 +306,7 @@ public class UserMessagingFrag extends Fragment implements View.OnClickListener,
                                     userMessage.setAudUrl(storageAudioUrl);
                                     userMessage.setVidUrl(storageVideoUrl);
                                     userMessage.setTimeStamp(LocationHelper.getGMTTime());
-                                    userMessage.setIsRead(false);
+                                    userMessage.setRead(false);
 
                                     Log.d(TAG, "inside admin profile");
                                     handler.removeCallbacks(r);
@@ -501,7 +501,7 @@ public class UserMessagingFrag extends Fragment implements View.OnClickListener,
     }
 
     private String getAudioFilename() {
-        audioFileName = "A_" + SessionManager.getDateTime() + ".mp4";
+        audioFileName = "A_" + SessionManager.getDateTime() + ".mp3";
         File file = new File(Environment.getExternalStorageDirectory() + AUDIO_RECORDER_FOLDER);
         if (!file.exists()) {
             file.mkdirs();
@@ -538,11 +538,11 @@ public class UserMessagingFrag extends Fragment implements View.OnClickListener,
             File currentFile = new File(filePath);
             File wallpaperDirectory = new File(Environment.getExternalStorageDirectory() + VIDEO_RECORDER_FOLDER);
             videoFileName = "V_" + SessionManager.getDateTime() + ".mp4";
-            newfile = new File(Environment.getExternalStorageDirectory() + VIDEO_RECORDER_FOLDER + videoFileName);
 
             if (!wallpaperDirectory.exists()) {
                 wallpaperDirectory.mkdirs();
             }
+            newfile = new File(Environment.getExternalStorageDirectory() + VIDEO_RECORDER_FOLDER + videoFileName);
             count++;
             tvVideoFileName.setText(videoFileName);
             videoFullFileName = Environment.getExternalStorageDirectory() + VIDEO_RECORDER_FOLDER + videoFileName;

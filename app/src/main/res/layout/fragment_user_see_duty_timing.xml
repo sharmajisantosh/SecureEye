@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_main"
+    tools:context=".Fragment.UserSeeDutyTiming">
+
+    <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/relatLayout243"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/_50sdp"
+        android:layout_marginRight="@dimen/_25sdp"
+        card_view:cardCornerRadius="@dimen/_10sdp"
+        card_view:cardElevation="@dimen/_5sdp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tvDutyUpdateTime"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_30sdp"
+                style="@style/textViewStyleDarkBold"
+                android:layout_marginTop="@dimen/_12sdp"
+                android:gravity="center_vertical"
+                android:text="Duty Updated At:"
+                android:paddingLeft="@dimen/_15sdp"
+                android:paddingRight="@dimen/_5sdp"
+                android:layout_below="@+id/dutyUserProfilePic" />
+
+            <TextView
+                android:id="@+id/dutyUpdateTime"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_30sdp"
+                style="@style/textViewStyleDarkBold"
+                android:layout_marginTop="@dimen/_12sdp"
+                android:gravity="center_vertical"
+                android:text="Duty Updated Time:"
+                android:layout_toRightOf="@+id/tvDutyUpdateTime" />
+
+            <TextView
+                android:id="@+id/tvDutyStartTime"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_30sdp"
+                style="@style/textViewStyleDark"
+                android:layout_marginTop="@dimen/_12sdp"
+                android:gravity="center_vertical"
+                android:text="Duty Start Time:"
+                android:paddingLeft="@dimen/_15sdp"
+                android:paddingRight="@dimen/_5sdp"
+                android:layout_below="@+id/dutyUpdateTime" />
+
+            <TextView
+                android:id="@+id/seeDutyStartTime"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_30sdp"
+                style="@style/textViewStyleDark"
+                android:layout_marginTop="@dimen/_12sdp"
+                android:text="Duty Start Time:"
+                android:gravity="center_vertical"
+                android:layout_below="@+id/dutyUpdateTime"
+                android:layout_toRightOf="@+id/tvDutyStartTime" />
+
+            <!--<com.example.secureEye.Utils.AnalogClockView
+                android:id="@+id/clockStartTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_12sdp"
+                android:layout_below="@+id/seeDutyStartTime"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center" />
+-->
+
+            <TextView
+                android:id="@+id/tvDutyEndTime"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_30sdp"
+                style="@style/textViewStyleDark"
+                android:layout_below="@+id/seeDutyStartTime"
+                android:layout_marginTop="@dimen/_12sdp"
+                android:text="Duty End Time:"
+                android:gravity="center_vertical"
+                android:paddingLeft="@dimen/_15sdp"
+                android:paddingRight="@dimen/_5sdp" />
+
+            <TextView
+                android:id="@+id/seeDutyEndTime"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_30sdp"
+                style="@style/textViewStyleDark"
+                android:layout_marginTop="@dimen/_12sdp"
+                android:text="Duty Start Time:"
+                android:gravity="center_vertical"
+                android:layout_below="@+id/tvDutyStartTime"
+                android:layout_toRightOf="@+id/tvDutyEndTime"
+                android:layout_marginBottom="@dimen/_20sdp"/>
+
+            <!--<com.example.secureEye.Utils.AnalogClockView
+                android:id="@+id/clockEndTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_below="@+id/seeDutyEndTime"
+                android:layout_marginTop="@dimen/_12sdp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="@dimen/_15sdp"/>
+-->
+
+        </RelativeLayout>
+
+    </androidx.cardview.widget.CardView>
+
+
+
+
+
+</RelativeLayout>

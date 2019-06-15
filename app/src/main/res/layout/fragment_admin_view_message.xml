@@ -3,23 +3,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="@color/bg_main"
-    tools:context=".Fragment.AdminViewMessage">
+    tools:context=".Activity.AdminViewMessage">
 
     <ScrollView
+        android:id="@+id/myScrollview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        >
 
         <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
             android:id="@+id/relatLayout17"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_marginLeft="@dimen/_12sdp"
             android:layout_marginTop="@dimen/_20sdp"
             android:layout_marginRight="@dimen/_12sdp"
-            android:layout_marginBottom="@dimen/_100sdp"
+            android:layout_marginBottom="@dimen/_10sdp"
             card_view:cardCornerRadius="@dimen/_10sdp"
             card_view:cardElevation="@dimen/_5sdp">
 
@@ -27,6 +29,7 @@
                 android:id="@+id/relatLayout237"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginBottom="@dimen/_10sdp"
                 android:padding="@dimen/_5sdp">
 
                 <TextView
@@ -176,7 +179,7 @@
                     android:textSize="@dimen/_10sdp" />
 
 
-                <FrameLayout
+                <RelativeLayout
                     android:id="@+id/videoFrameLayout"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_180sdp"
@@ -184,12 +187,25 @@
                     android:background="@color/quantum_black_100"
                     android:layout_marginBottom="@dimen/_20sdp">
 
-                    <com.github.rtoshiro.view.video.FullscreenVideoLayout
+                    <VideoView
                         android:id="@+id/videoView"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent" />
+                    <Button
+                        android:id="@+id/btnFullScreenVideo"
+                        android:layout_width="@dimen/_40sdp"
+                        android:layout_height="@dimen/_40sdp"
+                        android:background="@drawable/ic_fullscreen"
+                        android:layout_alignBottom="@+id/videoView"
+                        android:layout_alignRight="@+id/videoView" />
 
-                </FrameLayout>
+                    <ProgressBar
+                        android:id="@+id/videoProgressBar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"/>
+
+                </RelativeLayout>
 
             </RelativeLayout>
 

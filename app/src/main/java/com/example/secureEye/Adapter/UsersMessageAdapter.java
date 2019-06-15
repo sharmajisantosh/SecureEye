@@ -42,6 +42,7 @@ public class UsersMessageAdapter extends FirestoreRecyclerAdapter<UserMessage,Us
     @Override
     protected void onBindViewHolder(@NonNull MyViewHolder holder, int pos, @NonNull UserMessage userMessage) {
 
+        Log.d(TAG, "onBindViewHolder: isRead "+userMessage.isRead()+"   pos "+pos);
 
         if(userMessage.isRead()){
             holder.name.setText(userMessage.getFromName());

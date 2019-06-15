@@ -1,4 +1,6 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-android'
 apply plugin: 'com.google.gms.google-services'
 
 android {
@@ -61,6 +63,12 @@ dependencies {
     implementation 'com.github.Kunzisoft:Android-SwitchDateTimePicker:2.0'
     implementation 'com.github.JakeWharton:ViewPagerIndicator:2.4.1'
     implementation 'com.github.stfalcon:stfalcon-imageviewer:0.1.0'
-    implementation 'com.github.rtoshiro.fullscreenvideoview:fullscreenvideoview:1.1.2'
+    implementation "androidx.core:core-ktx:+"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.0.0"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
 }
 com.google.gms.googleservices.GoogleServicesPlugin.config.disableVersionCheck = true
+repositories {
+    mavenCentral()
+}

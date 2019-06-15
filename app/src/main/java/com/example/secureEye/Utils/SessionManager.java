@@ -1,5 +1,11 @@
 package com.example.secureEye.Utils;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -11,6 +17,8 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Parcelable;
+import android.util.Base64;
 import android.util.Log;
 
 import com.example.secureEye.Activity.MainActivity;
@@ -226,5 +234,31 @@ public class SessionManager {
 
 		// return current duration in milliseconds
 		return currentDuration * 1000;
+	}
+
+	public static <T extends Serializable> T stringToObjectS(String string) {
+		byte[] bytes = Base64.decode(string, 0);
+		T object = null;
+		try {
+			ObjectInputStream objectInputStream = new ObjectInputStream(new ByteArrayInputStream(bytes));
+			object = (T) objectInputStream.readObject();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return object;
+	}
+
+	public static String objectToString(Serializable object) {
+		String encoded = null;
+		try {
+			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+			ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+			objectOutputStream.writeObject(object);
+			objectOutputStream.close();
+			encoded = new String(Base64.encodeToString(byteArrayOutputStream.toByteArray(), 0));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return encoded;
 	}
 }

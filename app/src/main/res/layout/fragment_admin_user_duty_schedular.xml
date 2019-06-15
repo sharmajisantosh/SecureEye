@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_main"
+    tools:context=".Fragment.AdminUserDutySchedular">
+
+    <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/relatLayout243"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/_50sdp"
+        android:layout_marginRight="@dimen/_25sdp"
+        card_view:cardCornerRadius="@dimen/_10sdp"
+        card_view:cardElevation="@dimen/_5sdp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/dutyUserProfilePic"
+                android:layout_width="@dimen/_80sdp"
+                android:layout_height="@dimen/_80sdp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/_20sdp"
+                card_view:civ_border_width="@dimen/_2sdp"
+                card_view:civ_border_color="@color/bg_main"
+                android:src="@drawable/default_user"/>
+
+            <TextView
+                android:id="@+id/dutyUserName"
+                android:layout_width="@dimen/_220sdp"
+                android:layout_height="@dimen/_30sdp"
+                style="@style/textViewStyleDark"
+                android:layout_marginTop="@dimen/_12sdp"
+                android:gravity="center_vertical"
+                android:hint="User Name"
+                android:paddingLeft="@dimen/_15sdp"
+                android:paddingRight="@dimen/_15sdp"
+                android:layout_below="@+id/dutyUserProfilePic"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/edittext_rounded" />
+
+            <TextView
+                android:id="@+id/dutyUserEmail"
+                android:layout_width="@dimen/_220sdp"
+                android:layout_height="@dimen/_30sdp"
+                style="@style/textViewStyleDark"
+                android:layout_below="@+id/dutyUserName"
+                android:layout_marginTop="@dimen/_12sdp"
+                android:hint="User Mail"
+                android:gravity="center_vertical"
+                android:paddingLeft="@dimen/_15sdp"
+                android:paddingRight="@dimen/_15sdp"
+                android:background="@drawable/edittext_rounded"
+                android:layout_centerHorizontal="true" />
+
+            <TextView
+                android:id="@+id/dutyUserGeoZone"
+                android:layout_width="@dimen/_220sdp"
+                android:layout_height="@dimen/_30sdp"
+                style="@style/textViewStyleDark"
+                android:layout_below="@+id/dutyUserEmail"
+                android:layout_marginTop="@dimen/_12sdp"
+                android:hint="User GeoZone"
+                android:gravity="center_vertical"
+                android:paddingLeft="@dimen/_15sdp"
+                android:paddingRight="@dimen/_15sdp"
+                android:background="@drawable/edittext_rounded"
+                android:layout_centerHorizontal="true" />
+
+
+            <TextView
+                android:id="@+id/dutyStartTime"
+                android:layout_width="@dimen/_220sdp"
+                android:layout_height="@dimen/_30sdp"
+                style="@style/textViewStyleDark"
+                android:layout_below="@+id/dutyUserGeoZone"
+                android:layout_marginTop="@dimen/_12sdp"
+                android:hint="Duty Start Time"
+                android:gravity="center_vertical"
+                android:paddingLeft="@dimen/_15sdp"
+                android:paddingRight="@dimen/_15sdp"
+                android:background="@drawable/edittext_rounded"
+                android:layout_centerHorizontal="true" />
+
+            <TextView
+                android:id="@+id/dutyEndTime"
+                android:layout_width="@dimen/_220sdp"
+                android:layout_height="@dimen/_30sdp"
+                style="@style/textViewStyleDark"
+                android:layout_below="@+id/dutyStartTime"
+                android:layout_marginTop="@dimen/_12sdp"
+                android:hint="Duty End Time"
+                android:gravity="center_vertical"
+                android:paddingLeft="@dimen/_15sdp"
+                android:paddingRight="@dimen/_15sdp"
+                android:background="@drawable/edittext_rounded"
+                android:layout_centerHorizontal="true" />
+
+
+
+            <Button
+                android:id="@+id/btnAllotDuty"
+                android:layout_width="@dimen/_130sdp"
+                android:layout_height="@dimen/_40sdp"
+                android:text="Allot Duty"
+                android:textSize="@dimen/_12sdp"
+                android:layout_below="@id/dutyEndTime"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/_15sdp"
+                style="@style/textViewStyle"
+                android:background="@drawable/button_rounded_filled"
+                android:layout_marginBottom="@dimen/_12sdp"/>
+
+
+        </RelativeLayout>
+
+    </androidx.cardview.widget.CardView>
+
+
+
+
+</RelativeLayout>
